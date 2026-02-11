@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 
 interface HeaderProps {
@@ -56,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({
                 
                 <div className="relative rounded-full overflow-hidden border-[3px] border-white dark:border-slate-800 shadow-2xl group-hover:border-oracle-red transition-all duration-500 bg-white dark:bg-slate-800 w-16 h-16">
                   <img 
-                    src="public/avatar.png" 
+                    src="/avatar.png" 
                     alt="Logo Avatar" 
                     className="w-full h-full object-cover"
                   />

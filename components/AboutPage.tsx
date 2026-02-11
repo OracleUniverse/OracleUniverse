@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface AboutPageProps {
@@ -23,7 +22,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
           <div className="absolute -inset-4 bg-oracle-red/5 rounded-[3rem] blur-2xl group-hover:bg-oracle-red/10 transition duration-700"></div>
           <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl bg-white dark:bg-slate-900 p-2">
             <img 
-              src="public/avatar.png" 
+              src="/avatar.png" 
               alt="Liam" 
               className="w-full h-[500px] object-cover rounded-[2.2rem] bg-slate-50 dark:bg-slate-800"
             />
