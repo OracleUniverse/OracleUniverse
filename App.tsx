@@ -123,7 +123,7 @@ const App: React.FC = () => {
                 className="w-48 h-48 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto overflow-hidden shadow-xl cursor-pointer"
                 onClick={() => setIsAboutModalOpen(true)}
               >
-                <img src="/oracle-universe/avatar.png" alt="Author" className="w-full h-full object-cover" />
+                <img src="/oracleuniverse/avatar.png" alt="Author" className="w-full h-full object-cover" />
               </div>
               <div className="grid grid-cols-2 gap-4 px-4">
                 <button onClick={handleGoHome} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white">Home</button>
@@ -190,7 +190,7 @@ const App: React.FC = () => {
             <div className="md:col-span-4 space-y-8">
               <div className="flex items-center gap-4 group cursor-pointer" onClick={handleGoHome}>
                 <div className="w-14 h-14 rounded-2xl bg-white p-1 transform group-hover:rotate-12 transition-transform duration-500 shadow-2xl">
-                  <img src="/oracle-universe/avatar.png" className="w-full h-full object-cover rounded-xl" alt="Footer Logo" />
+                  <img src="/oracleuniverse/avatar.png" className="w-full h-full object-cover rounded-xl" alt="Footer Logo" />
                 </div>
                 <div>
                   <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Oracle</h3>
