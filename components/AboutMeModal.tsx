@@ -30,7 +30,7 @@ const AboutMeModal: React.FC<AboutMeModalProps> = ({ isOpen, onClose }) => {
         <div className="bg-slate-900 dark:bg-black h-24 sm:h-32 relative">
            <div className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 p-1 bg-white dark:bg-slate-900 rounded-full shadow-xl">
               <img 
-                src="/avatar.png" 
+                src="/oracle-universe/avatar.png" 
                 alt="Author Avatar" 
                 className="w-24 h-24 sm:w-40 sm:h-40 rounded-full bg-slate-100 dark:bg-slate-800 object-cover"
               />
