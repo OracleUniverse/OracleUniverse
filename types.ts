@@ -6,7 +6,7 @@ export interface BlogPost {
   content: string;
   author: string;
   date: string;
-  category: 'Database' | 'Cloud' | 'SQL' | 'PL/SQL' | 'Java' | 'Security';
+  category: 'Database' | 'Cloud' | 'SQL' | 'PL/SQL' | 'Java' | 'Security' | 'APEX';
   image: string;
   tags: string[];
 }

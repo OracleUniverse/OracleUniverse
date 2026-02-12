@@ -84,7 +84,7 @@ export const BLOG_POSTS: BlogPost[] = [
     `,
     author: 'Plugin Developer',
     date: 'Feb 24, 2025',
-    category: 'Database',
+    category: 'APEX',
     image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop',
     tags: ['APEX', 'Plugin', 'UI/UX', 'Open Source']
   },
@@ -383,10 +383,11 @@ export const BLOG_POSTS: BlogPost[] = [
   }
 ];
 
-export const CATEGORIES = ['All', 'Database', 'Cloud', 'SQL', 'PL/SQL', 'Java', 'Security'];
+export const CATEGORIES = ['All', 'APEX', 'Database', 'Cloud', 'SQL', 'PL/SQL', 'Java', 'Security'];
 
 export const CATEGORY_ICONS: Record<string, string> = {
   'All': 'fa-globe',
+  'APEX': 'fa-layer-group',
   'Database': 'fa-database',
   'Cloud': 'fa-cloud',
   'SQL': 'fa-code',
