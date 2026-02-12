@@ -39,6 +39,56 @@ export const ORACLE_NEWS: OracleNews[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    id: '10',
+    title: 'Supercharge Oracle APEX with the New Tree Select Plugin',
+    excerpt: 'A native, high-performance page item plugin for selecting hierarchical data with ease. Say goodbye to complex JavaScript workarounds.',
+    content: `
+      ## The Missing Piece in APEX
+      Handling hierarchical data in Oracle APEX forms has historically been challenging. While the standard Tree region is powerful, form inputs often require a dropdown-style tree selection mechanism—something that isn't built-in natively.
+
+      Enter **APEX Tree Select**.
+
+      ### Key Features
+      This open-source plugin bridges the gap, offering a robust set of features designed for enterprise applications:
+
+      1. **Native Page Item**: Works seamlessly with Dynamic Actions, Validations, and Session State.
+      2. **Searchable**: Built-in filtering allows users to find deep nodes instantly.
+      3. **Multi-Select**: Support for checkboxes to select multiple nodes at once.
+      4. **Lazy Loading**: Optimized for large datasets; load children only when expanded.
+
+      ### How to Use It
+      Installing the plugin is standard. Import the SQL file into your application, and you are ready to go.
+
+      ### Data Source Configuration
+      The plugin expects a standard SQL query returning hierarchical data. You simply map the columns in the Page Designer.
+
+      \`\`\`sql
+      SELECT 
+          emp_id    AS id, 
+          mgr_id    AS parent_id,
+          last_name AS label,
+          'fa fa-user' AS icon
+      FROM employees
+      CONNECT BY PRIOR emp_id = mgr_id
+      START WITH mgr_id IS NULL
+      ORDER SIBLINGS BY last_name;
+      \`\`\`
+
+      ### JSON Support
+      For modern applications, you can also bind it to a JSON returning function, making it perfect for REST Data Sources or \`apex_json\` output.
+
+      ### Get It Now
+      The project is open-source and available on GitHub. Contribute, fork, or just use it to make your users happy.
+
+      Check out the repository: **[OracleUniverse/apex-tree-select](https://github.com/OracleUniverse/apex-tree-select)**
+    `,
+    author: 'Plugin Developer',
+    date: 'Feb 24, 2025',
+    category: 'Database',
+    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop',
+    tags: ['APEX', 'Plugin', 'UI/UX', 'Open Source']
+  },
+  {
     id: '9',
     title: 'Mastering Oracle Database 26ai: A Deep Dive into AI Vector Search for Enterprise',
     excerpt: 'Oracle Database 26ai represents a fundamental shift in how we manage enterprise data. It is not just about storing rows and columns anymore; it is about storing meaning.',
