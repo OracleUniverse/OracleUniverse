@@ -85,7 +85,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'Plugin Developer',
     date: 'Feb 24, 2025',
     category: 'APEX',
-    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop',
+    image: '/tree2.jpg',
     tags: ['APEX', 'Plugin', 'UI/UX', 'Open Source']
   },
   {
@@ -206,7 +206,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'AI Architect',
     date: 'Feb 20, 2025',
     category: 'Database',
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop',
+    image: '/VectorSearch.jpg',
     tags: ['AI', 'Vector Search', '26ai', 'Oracle']
   },
   {
