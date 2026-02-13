@@ -39,6 +39,135 @@ export const ORACLE_NEWS: OracleNews[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    id: '11',
+    title: 'Designing an Enterprise-Grade Security and Standardization Architecture for Oracle APEX',
+    excerpt: 'Oracle APEX is often perceived as a "rapid development" tool. This article walks through a production-ready standardization architecture focused on security, scalability, and compliance.',
+    content: `
+      ## Designing an Enterprise-Grade Security and Standardization Architecture for Oracle APEX
+
+      Oracle APEX is often perceived as a “rapid development” tool. While that is true, many teams underestimate its ability to support enterprise-grade security, governance, and scalability when combined with proper Oracle Database design principles.
+
+      In this article, I’ll walk through a production-ready standardization architecture for Oracle Database, PL/SQL, and Oracle APEX — the kind of architecture suitable for banks, government systems, large enterprises, and multi-branch applications.
+
+      This is not a theoretical model. It is a battle-tested design approach focused on:
+      - Security by design
+      - Clear separation of responsibilities
+      - Scalability and maintainability
+      - Compliance and auditing
+
+      ### 1. Architectural Philosophy
+
+      The first principle is simple: **Oracle APEX should never be the security boundary. The database must always be the final authority.**
+
+      **APEX is responsible for:**
+      - UI rendering
+      - User interaction
+      - Page flow
+
+      **The Oracle Database is responsible for:**
+      - Data integrity
+      - Authorization
+      - Row-level security
+      - Auditing
+      - Business rules enforcement
+
+      This separation ensures that data remains protected even if accessed outside APEX, security rules cannot be bypassed by ad-hoc SQL or UI mistakes, and the system remains consistent across REST APIs and integrations.
+
+      ### 2. Schema Standardization (Separation of Duties)
+
+      A common mistake in APEX projects is putting *everything* into one schema. Instead, an enterprise design separates responsibilities clearly.
+
+      | Schema | Responsibility |
+      | :--- | :--- |
+      | **APEX_APP** | APEX application metadata + read-only synonyms |
+      | **APP_DATA** | Tables, sequences, constraints |
+      | **APP_API** | PL/SQL business logic and DML |
+      | **APP_SEC** | Security, session context, RLS, auditing |
+      | **APP_LOG** | Central logging and error tracking |
+      | **APP_INT** | Integrations and REST services |
+
+      **Why this matters:**
+      - UI developers cannot bypass security logic
+      - Business rules are reusable (APEX, REST, batch jobs)
+      - Auditing and monitoring are centralized
+      - Each layer has a single, clear responsibility
+
+      ### 3. The Role of the APEX Parsing Schema
+
+      The **APEX_APP** schema has a very specific purpose: It exists only to **run APEX pages**, not to own data or logic.
+
+      It should contain APEX application definitions and read-only synonyms. It must **NOT** contain tables, DML logic, or security decisions. It should never have \`INSERT\`, \`UPDATE\`, or \`DELETE\` privileges on data tables. Instead, it only executes controlled APIs.
+
+      ### 4. User Model: APEX Users ≠ Database Users
+
+      In enterprise APEX systems: **End users are application users, not database users.**
+
+      Using one DB user per APEX user breaks connection pooling, increases complexity, and does not scale.
+
+      **Correct Approach:**
+      Users are stored in application tables (\`APP_USERS\`, \`APP_ROLES\`). APEX authenticates the user, then the database is informed of who the user is logically, not physically.
+
+      ### 5. Session Context: The Foundation of Security
+
+      Oracle provides **Application Contexts** to store user identity at session level.
+
+      This context is set **once**, immediately after login:
+
+      \`\`\`sql
+      DBMS_SESSION.SET_CONTEXT('APP_CTX','USER_ID', v_user_id);
+      DBMS_SESSION.SET_CONTEXT('APP_CTX','BRANCH_ID', v_branch_id);
+      DBMS_SESSION.SET_CONTEXT('APP_CTX','ROLES', v_roles);
+      \`\`\`
+
+      From this point on, the database *knows* who the user is.
+
+      ### 6. Row-Level Security (RLS / VPD)
+
+      Row-Level Security ensures users only see **the data they are allowed to see**, regardless of how the query is written.
+
+      Instead of writing \`WHERE branch_id = :P_BRANCH_ID\` in every SQL query, we enforce it centrally using a **VPD policy**:
+
+      \`\`\`sql
+      RETURN 'BRANCH_ID = ' || SYS_CONTEXT('APP_CTX','BRANCH_ID');
+      \`\`\`
+
+      **Benefits:**
+      - No SQL duplication
+      - No accidental data leakage
+      - Works automatically for APEX, REST services, Reports, and SQL Developer.
+
+      ### 7. Business Logic and DML Standardization
+
+      **Standard Rule: APEX never performs DML directly.**
+
+      Instead, APEX calls \`APP_API\` packages. These packages validate input, apply business rules, perform DML, handle exceptions, and log errors. This ensures consistency, auditability, and reusability.
+
+      ### 8. Exception Handling and Logging
+
+      Every exception is captured centrally. Instead of letting errors disappear in the UI, errors are logged with User ID, Module, Stack trace, and Timestamp. This dramatically improves debugging, support, and compliance.
+
+      ### 9. Auditing with Fine-Grained Auditing (FGA)
+
+      Some data deserves **extra visibility** (e.g., Salaries, VIP records). Fine-Grained Auditing records who accessed the data, when, from where, and which query was used. Even read-only access can be audited, which is critical for GDPR, HIPAA, and SOX compliance.
+
+      ### 10. APEX-Specific Best Practices
+
+      1.  **No Ad-Hoc SQL in Pages**: SQL should come from Views or APIs, not directly embedded in regions.
+      2.  **Authorization Schemes**: UI visibility should be driven by central authorization functions and shared role logic, not hard-coded role checks.
+
+      ### Final Thoughts
+
+      Oracle APEX is not a “toy” platform. When combined with proper database architecture, context-based security, row-level policies, and centralized business logic, it becomes a **powerful enterprise application platform** capable of handling multi-branch systems, multi-tenant SaaS, and high-security environments.
+
+      The key is discipline and design — not speed alone.
+    `,
+    author: 'Principal Architect',
+    date: 'Mar 05, 2025',
+    category: 'Database',
+    image: '/standard2.jpg',
+    tags: ['APEX', 'Security', 'Architecture', 'Enterprise', 'VPD', 'RLS']
+  },
+  {
     id: '10',
     title: 'Supercharge Oracle APEX with the New Tree Select Plugin',
     excerpt: 'A native, high-performance page item plugin for selecting hierarchical data with ease. Say goodbye to complex JavaScript workarounds.',
