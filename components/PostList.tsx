@@ -10,60 +10,69 @@ interface PostListProps {
 const PostList: React.FC<PostListProps> = ({ posts, onPostClick }) => {
   if (posts.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-10 md:p-12 text-center my-6 w-full">
-        <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-          <i className="fas fa-magnifying-glass text-2xl md:text-3xl text-slate-300 dark:text-slate-600"></i>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-12 text-center my-6 w-full animate-fadeIn">
+        <div className="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i className="fas fa-magnifying-glass text-3xl text-slate-300 dark:text-slate-600"></i>
         </div>
-        <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white">No nodes found</h3>
-        <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">Query returned 0 results. Refine your search.</p>
+        <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">No data found</h3>
+        <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">Refine your search parameters to locate nodes.</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-10 w-full px-2 md:px-0">
-      {posts.map((post) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10 w-full px-2 md:px-0">
+      {posts.map((post, idx) => (
         <article 
           key={post.id} 
-          className="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 dark:border-slate-800 flex flex-col cursor-pointer active:scale-[0.98]"
+          className="group relative bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-lg border border-slate-100 dark:border-slate-800 flex flex-col cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-black/50 hover:-translate-y-2 animate-fadeIn"
+          style={{ animationDelay: `${idx * 50}ms` }}
           onClick={() => onPostClick(post)}
         >
-          <div className="relative h-48 sm:h-64 md:h-52 lg:h-56 overflow-hidden">
+          {/* Glowing bottom bar */}
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-oracle-red to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 z-20"></div>
+
+          <div className="relative h-60 overflow-hidden">
             <img 
               src={post.image} 
               alt={post.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 will-change-transform"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div className="absolute top-3 right-3 md:top-4 md:right-4">
-              <span className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md text-oracle-red text-[8px] md:text-[10px] font-black px-2.5 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg uppercase tracking-widest">
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity"></div>
+            
+            {/* Category Badge */}
+            <div className="absolute top-4 right-4">
+              <span className="glass-pill text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg backdrop-blur-md border-white/20">
                 {post.category}
               </span>
             </div>
-            <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 flex items-center gap-2 text-white/90 text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
-               <i className="far fa-calendar-alt"></i>
-               <span>{post.date}</span>
+            
+            <div className="absolute bottom-4 left-4 flex items-center gap-2 text-white/90">
+               <span className="bg-oracle-red w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-lg group-hover:rotate-12 transition-transform">
+                 <i className="far fa-calendar-alt"></i>
+               </span>
+               <span className="text-[10px] font-bold uppercase tracking-wider">{post.date}</span>
             </div>
           </div>
           
-          <div className="p-5 md:p-6 flex-grow flex flex-col">
-            <h2 className="text-base md:text-lg font-black text-slate-900 dark:text-white group-hover:text-oracle-red transition mb-2 md:mb-3 leading-snug">
+          <div className="p-7 flex-grow flex flex-col relative z-10">
+            <h2 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-oracle-red transition-colors duration-300 mb-3 leading-tight tracking-tight">
               {post.title}
             </h2>
             
-            <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm leading-relaxed mb-4 md:mb-6 line-clamp-2">
+            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 line-clamp-3 font-medium">
               {post.excerpt}
             </p>
             
-            <div className="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
-                  <i className="fas fa-user text-[8px] md:text-[10px] text-slate-400"></i>
+            <div className="mt-auto pt-5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                  <i className="fas fa-user-astronaut text-xs"></i>
                 </div>
-                <span className="text-[9px] md:text-[10px] font-bold text-slate-600 dark:text-slate-400">{post.author}</span>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{post.author}</span>
               </div>
-              <div className="bg-slate-50 dark:bg-slate-800 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center group-hover:bg-oracle-red group-hover:text-white transition">
-                <i className="fas fa-arrow-right text-[10px] md:text-xs"></i>
+              <div className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 group-hover:bg-oracle-red group-hover:border-oracle-red group-hover:text-white transition-all duration-300 transform group-hover:translate-x-1">
+                <i className="fas fa-arrow-right text-xs"></i>
               </div>
             </div>
           </div>

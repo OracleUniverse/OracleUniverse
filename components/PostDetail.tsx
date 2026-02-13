@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BlogPost } from '../types';
 
 interface PostDetailProps {
@@ -44,15 +44,15 @@ const SqlHighlighter: React.FC<{ code: string }> = ({ code }) => {
             {words.map((word, j) => {
               if (word === "'") {
                 inString = !inString;
-                return <span key={j} className="text-green-400">{word}</span>;
+                return <span key={j} className="text-emerald-400">{word}</span>;
               }
               if (inString) {
-                return <span key={j} className="text-green-400">{word}</span>;
+                return <span key={j} className="text-emerald-400">{word}</span>;
               }
               if (keywords.has(word.toUpperCase())) {
                 return <span key={j} className="text-oracle-red font-bold">{word}</span>;
               }
-              return <span key={j} className="text-slate-200">{word}</span>;
+              return <span key={j} className="text-slate-300">{word}</span>;
             })}
           </div>
         );
@@ -62,33 +62,32 @@ const SqlHighlighter: React.FC<{ code: string }> = ({ code }) => {
 };
 
 const renderContent = (content: string) => {
-  // Dedent content slightly if needed, though split usually handles it if we trim lines for headers
   const blocks = content.split(/```/g);
 
   return blocks.map((block, index) => {
     // Code Blocks (Odd indices)
     if (index % 2 === 1) {
       const lines = block.split('\n');
-      // The first line usually contains the language (e.g., "sql")
       const language = lines[0].trim().toLowerCase();
-      // The rest is code. Remove the first line and any initial/trailing whitespace
       const code = lines.slice(1).join('\n').replace(/^\n+|\n+$/g, '');
 
       return (
-        <div key={index} className="my-8 rounded-2xl overflow-hidden shadow-2xl border border-slate-700 bg-[#0f172a] group relative">
-          <div className="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
-             <div className="flex gap-1.5">
-               <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
-               <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
-               <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
+        <div key={index} className="my-10 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-[#0f172a] group relative transform hover:scale-[1.01] transition-transform duration-300">
+          <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800">
+             <div className="flex gap-2">
+               <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
+               <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
+               <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
              </div>
-             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{language || 'CODE'}</span>
+             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+               <i className="fas fa-terminal"></i> {language || 'SCRIPT'}
+             </span>
           </div>
-          <div className="p-6 overflow-x-auto custom-scrollbar">
+          <div className="p-6 overflow-x-auto custom-scrollbar bg-[#1e293b]/50">
             {language === 'sql' ? (
               <SqlHighlighter code={code} />
             ) : (
-              <pre className="font-mono text-sm text-slate-200 leading-relaxed whitespace-pre">
+              <pre className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre">
                 {code}
               </pre>
             )}
@@ -99,37 +98,36 @@ const renderContent = (content: string) => {
 
     // Text Blocks
     return (
-      <div key={index} className="space-y-4">
+      <div key={index} className="space-y-6">
         {block.split('\n').map((line, i) => {
           const trimmed = line.trim();
           if (!trimmed) return null;
 
           if (trimmed.startsWith('### ')) {
-            return <h3 key={i} className="text-xl font-black text-slate-800 dark:text-white mt-8 mb-4 tracking-tight uppercase flex items-center gap-2"><span className="w-2 h-2 bg-oracle-red rounded-sm"></span>{formatText(trimmed.replace('### ', ''))}</h3>;
+            return <h3 key={i} className="text-xl font-black text-slate-800 dark:text-white mt-10 mb-4 tracking-tight uppercase flex items-center gap-3"><span className="w-8 h-1 bg-oracle-red rounded-full"></span>{formatText(trimmed.replace('### ', ''))}</h3>;
           }
           if (trimmed.startsWith('## ')) {
-            return <h2 key={i} className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mt-12 mb-6 tracking-tighter border-b border-slate-200 dark:border-slate-800 pb-4">{formatText(trimmed.replace('## ', ''))}</h2>;
+            return <h2 key={i} className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mt-16 mb-8 tracking-tighter">{formatText(trimmed.replace('## ', ''))}</h2>;
           }
           if (trimmed.startsWith('- ')) {
              return (
-              <div key={i} className="flex gap-3 ml-2 md:ml-4 text-slate-600 dark:text-slate-300">
-                 <span className="text-oracle-red mt-1.5 text-xs"><i className="fas fa-circle"></i></span>
-                 <p className="leading-relaxed">{formatText(trimmed.replace('- ', ''))}</p>
+              <div key={i} className="flex gap-4 ml-2 md:ml-4 text-slate-600 dark:text-slate-300">
+                 <span className="text-oracle-red mt-2 text-[8px]"><i className="fas fa-circle"></i></span>
+                 <p className="leading-relaxed text-lg">{formatText(trimmed.replace('- ', ''))}</p>
               </div>
              );
           }
-          // Numbered lists (1. , 2. )
           const numMatch = trimmed.match(/^(\d+)\.\s(.*)/);
           if (numMatch) {
              return (
-              <div key={i} className="flex gap-3 ml-2 md:ml-4 mb-2 text-slate-600 dark:text-slate-300">
-                 <span className="font-bold text-oracle-red font-mono">{numMatch[1]}.</span>
-                 <p className="leading-relaxed">{formatText(numMatch[2])}</p>
+              <div key={i} className="flex gap-4 ml-2 md:ml-4 mb-4 text-slate-600 dark:text-slate-300">
+                 <span className="font-black text-oracle-red font-mono text-lg">{numMatch[1]}.</span>
+                 <p className="leading-relaxed text-lg">{formatText(numMatch[2])}</p>
               </div>
              );
           }
 
-          return <p key={i} className="text-lg leading-loose text-slate-600 dark:text-slate-300 font-normal">{formatText(trimmed)}</p>;
+          return <p key={i} className="text-lg md:text-xl leading-8 text-slate-600 dark:text-slate-300 font-medium">{formatText(trimmed)}</p>;
         })}
       </div>
     );
@@ -137,68 +135,85 @@ const renderContent = (content: string) => {
 };
 
 const PostDetail: React.FC<PostDetailProps> = ({ post, onBack }) => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <article className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden animate-fadeIn transition-colors duration-300">
-      <div className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
+    <article className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-fadeIn transition-colors duration-300 relative z-10">
+      
+      {/* Sticky Action Bar */}
+      <div className="sticky top-20 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between transition-all">
         <button 
           onClick={onBack}
-          className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-oracle-red font-bold uppercase tracking-widest text-xs transition group"
+          className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-oracle-red font-black uppercase tracking-widest text-xs transition group"
         >
-          <i className="fas fa-arrow-left group-hover:-translate-x-1 transition"></i>
+          <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-oracle-red group-hover:text-white transition">
+            <i className="fas fa-arrow-left group-hover:-translate-x-0.5 transition"></i>
+          </div>
           Back
         </button>
-        <span className="text-xs font-black uppercase tracking-widest text-slate-300 dark:text-slate-600 hidden sm:block">Article View</span>
+        <div className="flex items-center gap-3">
+           <button className="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition flex items-center justify-center"><i className="far fa-bookmark"></i></button>
+           <button className="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition flex items-center justify-center"><i className="fas fa-share-nodes"></i></button>
+        </div>
       </div>
 
-      <div className="relative h-[300px] md:h-[400px] group">
+      {/* Parallax Hero Image */}
+      <div className="relative h-[400px] md:h-[500px] overflow-hidden group">
         <img 
           src={post.image} 
           alt={post.title}
-          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-75 will-change-transform"
+          style={{ transform: `scale(1.1) translateY(${scrollY * 0.3}px)` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
-          <div className="container mx-auto">
-             <div className="flex gap-3 mb-4">
-                <span className="bg-oracle-red text-white text-[10px] font-black px-3 py-1 rounded-lg uppercase tracking-widest shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
+          <div className="container mx-auto max-w-4xl">
+             <div className="flex gap-3 mb-6 animate-slideUp">
+                <span className="glass-pill text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest border-white/20">
                   {post.category}
                 </span>
              </div>
-            <h1 className="text-3xl md:text-5xl font-black text-white leading-tight max-w-4xl tracking-tighter mb-4 drop-shadow-2xl">
+            <h1 className="text-3xl md:text-6xl font-black text-white leading-tight tracking-tighter mb-6 drop-shadow-2xl animate-slideUp [animation-delay:100ms]">
               {post.title}
             </h1>
           </div>
         </div>
       </div>
 
-      <div className="px-6 py-10 md:px-12 md:py-16">
+      <div className="px-6 py-12 md:px-16 md:py-20 max-w-5xl mx-auto">
         {/* Meta Info */}
-        <div className="flex flex-wrap items-center gap-6 mb-12 text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
-              <i className="fas fa-user-astronaut text-slate-400 dark:text-slate-500"></i>
+        <div className="flex flex-wrap items-center gap-8 mb-16 text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-10">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
+              <i className="fas fa-user-astronaut text-xl text-slate-400 dark:text-slate-500"></i>
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-900 dark:text-white leading-none mb-1">{post.author}</p>
-              <p className="text-[10px] uppercase tracking-widest font-bold">Author</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white leading-none mb-1.5">{post.author}</p>
+              <p className="text-[10px] uppercase tracking-widest font-bold text-oracle-red">Verified Author</p>
             </div>
           </div>
-          <div className="h-10 w-px bg-slate-200 dark:bg-slate-800 hidden md:block mx-2"></div>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
-              <i className="far fa-calendar text-slate-400 dark:text-slate-500"></i>
+          <div className="h-12 w-px bg-slate-200 dark:bg-slate-800 hidden md:block"></div>
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
+              <i className="far fa-clock text-xl text-slate-400 dark:text-slate-500"></i>
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-900 dark:text-white leading-none mb-1">{post.date}</p>
-              <p className="text-[10px] uppercase tracking-widest font-bold">Published</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white leading-none mb-1.5">{post.date}</p>
+              <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Published</p>
             </div>
           </div>
         </div>
 
         {/* Content Body */}
         <div className="max-w-none">
-          <div className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-12 border-l-4 border-oracle-red pl-6 md:pl-8 py-2">
-            {post.excerpt}
+          <div className="text-xl md:text-3xl text-slate-700 dark:text-slate-200 leading-normal font-bold mb-16 font-serif italic opacity-90">
+            "{post.excerpt}"
           </div>
           
           <div className="post-content">
@@ -207,11 +222,13 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, onBack }) => {
         </div>
 
         {/* Tags */}
-        <div className="mt-16 pt-10 border-t border-slate-100 dark:border-slate-800">
-          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Related Topics</h4>
+        <div className="mt-20 pt-10 border-t border-slate-100 dark:border-slate-800">
+          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+            <i className="fas fa-tags"></i> Related Topics
+          </h4>
           <div className="flex flex-wrap gap-3">
             {post.tags.map(tag => (
-              <span key={tag} className="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-default border border-slate-200 dark:border-slate-700">
+              <span key={tag} className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-oracle-red hover:text-white transition-colors cursor-pointer border border-slate-200 dark:border-slate-700">
                 #{tag}
               </span>
             ))}
