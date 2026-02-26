@@ -9,8 +9,13 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
+        space: ['"Space Grotesk"', 'sans-serif'],
+      },
       colors: {
-        'oracle-red': '#f80000',
+        'oracle-red': '#E6192B',
+        'oracle-accent': '#FF3344',
       },
       animation: {
         'shimmer': 'shimmer 2s linear infinite',

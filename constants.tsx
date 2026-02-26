@@ -39,6 +39,96 @@ export const ORACLE_NEWS: OracleNews[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    id: '12',
+    title: 'Real-Time Messaging in Oracle APEX: A Self-Hosted WebSocket Solution',
+    excerpt: 'Bridge the gap between your Oracle Database and the browser with a dedicated Node.js WebSocket bus. Send messages from PL/SQL to any APEX page instantly.',
+    content: `
+      ## 🔍 Overview
+      Handling real-time updates in Oracle APEX often leads to costly polling or complex third-party services. **APEX Real-Time Messaging (RTM)** is a small, self-hosted **real-time message bus** designed specifically for the Oracle stack.
+
+      It provides a seamless bridge between your Oracle Database (using MLE JS) and your APEX application via a lightweight Node.js WebSocket server.
+
+      ### What it gives you:
+      - **Node.js WebSocket bridge** running on an Oracle Cloud Compute instance.
+      - **3 APEX plug-ins**: Listener (Dynamic Action), Broadcast (Dynamic Action), and Broadcast (Process).
+      - **DB-side MLE JavaScript module** + PL/SQL API (\`WEBSOCKET_API\`).
+      - **Logging layer** to track every broadcast.
+
+      ## 🧩 Architecture
+      The architecture is designed for low latency and high reliability:
+
+      \`\`\`text
+      [ APEX Page (Browser) ]
+          ▲           │ WebSocket (wss://rtm.yourdomain.com)
+          │           │
+          │   RTM – Listener (DA plugin)
+          │           │
+          │     JSON events: { channel, eventName, payload, ... }
+          │
+      [ Node.js RTM Server ]
+          ▲   HTTP POST /api/broadcast
+          │
+          │  WEBSOCKET_API.broadcast_item(...)
+          │
+      [ Oracle DB (MLE JS) + PL/SQL ]
+          ▲
+      [ APEX Plug-ins: RTM – Broadcast (Process / DA) ]
+      \`\`\`
+
+      ## ⚙️ Getting Started: The RTM Server
+      To get started, you'll need a small Oracle Cloud Compute instance (Oracle Linux 9 recommended).
+
+      1. **Install Node.js & Nginx**: Use \`dnf\` to install the runtime and the reverse proxy.
+      2. **Setup SSL**: Use Let's Encrypt and Certbot to secure your WebSocket connection (\`wss://\`).
+      3. **Launch the Node Server**: A simple Express + \`ws\` application handles the message routing.
+
+      ### Sample Broadcast API (Node.js)
+      \`\`\`js
+      app.post("/api/broadcast", (req, res) => {
+        const { channel, eventName, payload } = req.body;
+        const msg = JSON.stringify({ channel, eventName, payload });
+
+        wss.clients.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(msg);
+          }
+        });
+        res.json({ ok: true });
+      });
+      \`\`\`
+
+      ## 🗃️ Database Integration (MLE)
+      On the database side, we leverage **Multilingual Engine (MLE)** to perform the HTTP POST to the RTM server. This allows PL/SQL developers to trigger real-time updates directly from triggers, packages, or APEX processes.
+
+      \`\`\`sql
+      BEGIN
+          websocket_api.broadcast(
+              p_channel   => 'room_42',
+              p_event_name => 'new_message',
+              p_payload    => '{"text": "Hello World", "user": "Admin"}'
+          );
+      END;
+      \`\`\`
+
+      ## 🚀 Advanced Use Cases
+      The beauty of RTM is its flexibility. Since you define the JSON payload, you can use it for:
+      - **Group Chats**: Route messages based on room IDs.
+      - **Background Jobs**: Notify users when a long-running process completes.
+      - **Region Refresh**: Automatically trigger a Refresh Dynamic Action when data changes.
+      - **Collaboration**: Synced state between multiple users on the same page.
+
+      ## Get the Code
+      The entire project is open-source and ready for your next project. Explore the repository, contribute, and build amazing real-time experiences.
+
+      **Check it out on GitHub: [OracleUniverse/apex-realtime-messaging](https://github.com/OracleUniverse/apex-realtime-messaging)**
+    `,
+    author: 'Oracle Architect',
+    date: 'Mar 10, 2025',
+    category: 'APEX',
+    image: '/Real-Time Messaging.png',
+    tags: ['APEX', 'Real-time', 'WebSocket', 'Node.js', 'MLE', 'Cloud']
+  },
+  {
     id: '11',
     title: 'Designing an Enterprise-Grade Security and Standardization Architecture for Oracle APEX',
     excerpt: 'Oracle APEX is often perceived as a "rapid development" tool. This article walks through a production-ready standardization architecture focused on security, scalability, and compliance.',
@@ -163,8 +253,8 @@ export const BLOG_POSTS: BlogPost[] = [
     `,
     author: 'Principal Architect',
     date: 'Mar 05, 2025',
-    category: 'Database',
-    image: '/standard2.jpg',
+    category: 'APEX',
+    image: '/Security and Standardization Architecture.jpeg',
     tags: ['APEX', 'Security', 'Architecture', 'Enterprise', 'VPD', 'RLS']
   },
   {
@@ -214,7 +304,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'Plugin Developer',
     date: 'Feb 24, 2025',
     category: 'APEX',
-    image: '/tree2.jpg',
+    image: '/Tree Select Plugin.png',
     tags: ['APEX', 'Plugin', 'UI/UX', 'Open Source']
   },
   {
@@ -335,7 +425,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'AI Architect',
     date: 'Feb 20, 2025',
     category: 'Database',
-    image: '/VectorSearch.jpg',
+    image: '/Vector Search.png',
     tags: ['AI', 'Vector Search', '26ai', 'Oracle']
   },
   {
@@ -357,7 +447,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'Oracle Guru',
     date: 'Oct 15, 2024',
     category: 'SQL',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=800&auto=format&fit=crop',
+    image: '/Optimize SQL.jpg',
     tags: ['SQL', '23c', 'Performance']
   },
   {
@@ -378,7 +468,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'Cloud Architect',
     date: 'Oct 20, 2024',
     category: 'Cloud',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
+    image: '/Autonomous DB.jpg',
     tags: ['Cloud', 'OCI', 'Autonomous']
   },
   {
@@ -465,7 +555,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'Data Architect',
     date: 'Nov 15, 2024',
     category: 'Database',
-    image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=800&auto=format&fit=crop',
+    image: '/Json.jpg',
     tags: ['JSON', 'Database', 'Architecture']
   },
   {
@@ -486,7 +576,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'Cloud Architect',
     date: 'Nov 18, 2024',
     category: 'Cloud',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=800&auto=format&fit=crop',
+    image: '/VCN.png',
     tags: ['Networking', 'OCI', 'VCN']
   },
   {
@@ -507,7 +597,7 @@ export const BLOG_POSTS: BlogPost[] = [
     author: 'DevOps Lead',
     date: 'Nov 22, 2024',
     category: 'Cloud',
-    image: 'https://images.unsplash.com/photo-1551288049-bbda38a5f923?q=80&w=800&auto=format&fit=crop',
+    image: '/Oracle Observability.png',
     tags: ['DevOps', 'Monitoring', 'OCI']
   }
 ];

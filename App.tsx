@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Header from './components/Header';
 import PostDetail from './components/PostDetail';
 import AboutPage from './components/AboutPage';
@@ -62,7 +63,7 @@ const App: React.FC = () => {
   const filteredPosts = useMemo(() => {
     return BLOG_POSTS.filter((post) => {
       const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = activeCategory === 'All' || post.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
@@ -98,7 +99,7 @@ const App: React.FC = () => {
         case 'explore':
           return (
             <div className="lg:hidden py-4 space-y-8 max-w-2xl mx-auto">
-              <Sidebar 
+              <Sidebar
                 categories={CATEGORIES}
                 activeCategory={activeCategory}
                 onCategoryChange={(cat) => {
@@ -118,7 +119,7 @@ const App: React.FC = () => {
         case 'more':
           return (
             <div className="lg:hidden py-6 text-center space-y-8 max-w-xl mx-auto">
-              <div 
+              <div
                 className="w-48 h-48 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto overflow-hidden shadow-xl cursor-pointer"
                 onClick={() => setIsAboutModalOpen(true)}
               >
@@ -135,16 +136,16 @@ const App: React.FC = () => {
 
     switch (currentView) {
       case 'post':
-        return selectedPost ? <div className="max-w-4xl mx-auto w-full"><PostDetail post={selectedPost} onBack={handleGoHome} /></div> : null;
+        return selectedPost ? <div className="max-w-4xl mx-auto w-full"><PostDetail post={selectedPost} allPosts={BLOG_POSTS} onBack={handleGoHome} onPostClick={handlePostClick} /></div> : null;
       case 'about':
         return <AboutPage onBack={handleGoHome} />;
       case 'home':
       default:
         return (
-          <HomePage 
-            posts={filteredPosts} 
-            activeCategory={activeCategory} 
-            onCategoryChange={setActiveCategory} 
+          <HomePage
+            posts={filteredPosts}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
             categories={CATEGORIES}
             onPostClick={handlePostClick}
           />
@@ -153,16 +154,21 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300 w-full overflow-x-hidden">
-      <Header 
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300 w-full overflow-x-hidden relative">
+      {/* Premium Aurora Background */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-oracle-red/5 rounded-full blur-[120px] animate-aurora"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-oracle-red/5 rounded-full blur-[120px] animate-aurora [animation-delay:-5s]"></div>
+      </div>
+      <Header
         onHomeClick={handleGoHome}
-        onAboutClick={() => navigateTo('about')} 
+        onAboutClick={() => navigateTo('about')}
         onAvatarClick={() => setIsAboutModalOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery} theme={theme} onThemeToggle={toggleTheme} activeView={currentView}
       />
-      
-      <button 
+
+      <button
         onClick={scrollToTop}
         className={`fixed bottom-24 lg:bottom-10 right-6 lg:right-10 z-[55] w-12 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full flex items-center justify-center text-slate-400 hover:text-oracle-red hover:shadow-xl hover:shadow-oracle-red/20 transition-all duration-500 shadow-lg active:scale-90 ${showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'}`}
         title="Back to top"
@@ -170,11 +176,19 @@ const App: React.FC = () => {
         <i className="fas fa-chevron-up"></i>
       </button>
 
-      <main className="flex-grow container mx-auto px-4 lg:px-6 pt-8 pb-32 lg:pb-40 flex flex-col gap-12 min-w-0">
+      <main className="flex-grow container mx-auto px-4 lg:px-6 pt-8 pb-32 lg:pb-40 flex flex-col gap-12 min-w-0 relative z-10">
         <div className="w-full min-w-0">
-          <div className="animate-tab-content">
-            {renderContent()}
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeMobileTab !== 'feed' ? activeMobileTab : currentView + (selectedPost?.id || '')}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              {renderContent()}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
 
@@ -183,7 +197,7 @@ const App: React.FC = () => {
 
       <footer className="hidden lg:block bg-[#0a0a0a] text-white overflow-hidden relative border-t border-white/5">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-bl from-oracle-red/5 to-transparent pointer-events-none"></div>
-        
+
         <div className="container mx-auto px-6 py-20 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-16">
             <div className="md:col-span-4 space-y-8">
@@ -221,8 +235,8 @@ const App: React.FC = () => {
                 <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-oracle-red mb-8">Connect</h4>
                 <ul className="space-y-5 text-slate-400 text-sm font-bold uppercase tracking-wider">
                   <li><a href="#" className="hover:text-[#1877F2] transition-colors flex items-center gap-3"><i className="fab fa-facebook-f w-5"></i> Facebook</a></li>
-                  <li><a href="#" className="hover:text-[#FF0000] transition-colors flex items-center gap-3"><i className="fab fa-youtube w-5"></i> YouTube</a></li>
-                  <li><a href="#" className="hover:text-[#0A66C2] transition-colors flex items-center gap-3"><i className="fab fa-linkedin-in w-5"></i> LinkedIn</a></li>
+                  <li><a href="https://youtube.com/@oracle-universe?si=nCN9JzTTuPf2MVh1" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF0000] transition-colors flex items-center gap-3"><i className="fab fa-youtube w-5"></i> YouTube</a></li>
+                  <li><a href="https://linkedin.com/company/oracleuniverse" target="_blank" rel="noopener noreferrer" className="hover:text-[#0A66C2] transition-colors flex items-center gap-3"><i className="fab fa-linkedin-in w-5"></i> LinkedIn</a></li>
                   <li><button onClick={() => setIsAboutModalOpen(true)} className="hover:text-white transition-colors flex items-center gap-3"><i className="fas fa-envelope w-5"></i> Direct Mail</button></li>
                 </ul>
               </div>
@@ -233,9 +247,9 @@ const App: React.FC = () => {
                 <h4 className="text-xs font-black uppercase tracking-widest text-white">Subscribe to Insights</h4>
                 <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">No spam. Only elite technical updates.</p>
                 <div className="relative">
-                  <input 
-                    type="email" 
-                    placeholder="Email address..." 
+                  <input
+                    type="email"
+                    placeholder="Email address..."
                     className="w-full bg-[#151515] border border-slate-800 rounded-2xl p-4 text-sm outline-none focus:ring-2 focus:ring-oracle-red transition-all"
                   />
                   <button className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-oracle-red rounded-xl flex items-center justify-center hover:bg-white hover:text-oracle-red transition-all shadow-xl">
