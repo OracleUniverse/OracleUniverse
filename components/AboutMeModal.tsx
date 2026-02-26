@@ -16,18 +16,22 @@ const AboutMeModal: React.FC<AboutMeModalProps> = ({ isOpen, onClose }) => {
       ></div>
 
       <div className="relative bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl transform transition-all animate-scaleIn border-t sm:border dark:border-slate-800 max-h-[90vh] overflow-y-auto no-scrollbar">
+        {/* Liquid background accent */}
+        <div className="absolute top-[30%] left-[-20%] w-[150%] h-[150%] bg-oracle-red/5 liquid-shape blur-[80px] pointer-events-none z-0"></div>
+
         {/* Mobile Pull Indicator */}
-        <div className="sm:hidden w-12 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mt-4 mb-2"></div>
+        <div className="relative z-20 sm:hidden w-12 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mt-4 mb-2"></div>
 
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition shadow-md z-20"
+          className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 dark:text-slate-400 hover:text-oracle-red dark:hover:text-oracle-red hover:bg-white transition shadow-md z-20"
         >
           <i className="fas fa-times"></i>
         </button>
 
         <div className="bg-slate-900 dark:bg-black h-24 sm:h-32 relative">
-          <div className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 p-1 bg-white dark:bg-slate-900 rounded-full shadow-xl">
+          <div className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 p-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md rounded-full shadow-xl z-10 border border-slate-200 dark:border-slate-800">
+            <div className="absolute inset-[-10%] bg-oracle-red/20 liquid-shape blur-[10px] -z-10 animate-pulse-slow"></div>
             <img
               src="/avatar.png"
               alt="Author Avatar"
@@ -36,7 +40,7 @@ const AboutMeModal: React.FC<AboutMeModalProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        <div className="pt-16 sm:pt-20 pb-8 sm:pb-10 px-6 sm:px-8">
+        <div className="relative z-10 pt-16 sm:pt-20 pb-8 sm:pb-10 px-6 sm:px-8">
           <div className="mb-4 sm:mb-6">
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Oracle Architect</h2>
             <p className="text-oracle-red font-black text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mt-1">Principal Certified Professional</p>

@@ -120,14 +120,21 @@ const App: React.FC = () => {
           return (
             <div className="lg:hidden py-6 text-center space-y-8 max-w-xl mx-auto">
               <div
-                className="w-48 h-48 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto overflow-hidden shadow-xl cursor-pointer"
+                className="relative isolate w-48 h-48 bg-slate-200/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full mx-auto overflow-hidden shadow-xl cursor-pointer p-2 border border-slate-200 dark:border-slate-700"
                 onClick={() => setIsAboutModalOpen(true)}
               >
-                <img src="/avatar.png" alt="Author" className="w-full h-full object-cover" />
+                <div className="absolute inset-[-20%] bg-oracle-red/30 liquid-shape blur-[20px] -z-10 animate-pulse-slow"></div>
+                <img src="/avatar.png" alt="Author" className="w-full h-full object-cover rounded-full" />
               </div>
               <div className="grid grid-cols-2 gap-4 px-4">
-                <button onClick={handleGoHome} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white">Home</button>
-                <button onClick={() => navigateTo('about')} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white">About</button>
+                <button onClick={handleGoHome} className="relative isolate overflow-hidden bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white group">
+                  <div className="absolute inset-[-50%] bg-oracle-red/10 liquid-shape blur-[30px] opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+                  Home
+                </button>
+                <button onClick={() => navigateTo('about')} className="relative isolate overflow-hidden bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white group">
+                  <div className="absolute inset-[-50%] bg-oracle-red/10 liquid-shape blur-[30px] opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+                  About
+                </button>
               </div>
             </div>
           );
@@ -157,8 +164,8 @@ const App: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300 w-full overflow-x-hidden relative">
       {/* Premium Aurora Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-oracle-red/5 rounded-full blur-[120px] animate-aurora"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-oracle-red/5 rounded-full blur-[120px] animate-aurora [animation-delay:-5s]"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-oracle-red/5 liquid-shape blur-[100px] animate-aurora"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-oracle-red/5 liquid-shape blur-[100px] animate-aurora [animation-delay:-5s]"></div>
       </div>
       <Header
         onHomeClick={handleGoHome}
@@ -195,8 +202,10 @@ const App: React.FC = () => {
       <AboutMeModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
       <BottomNav activeTab={activeMobileTab} onTabChange={handleTabChange} />
 
-      <footer className="hidden lg:block bg-[#0a0a0a] text-white overflow-hidden relative border-t border-white/5">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-bl from-oracle-red/5 to-transparent pointer-events-none"></div>
+      <footer className="hidden lg:block bg-[#0a0a0a] text-white overflow-hidden relative border-t border-white/5 mt-auto">
+        {/* Footer Liquid Background */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-oracle-red/10 liquid-shape blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-oracle-red/5 liquid-shape blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/3"></div>
 
         <div className="container mx-auto px-6 py-20 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-16">

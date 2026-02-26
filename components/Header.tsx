@@ -78,8 +78,8 @@ const Header: React.FC<HeaderProps> = ({
                   className={`relative cursor-pointer group active:scale-90 transition-all duration-500 transform ${scrolled ? 'scale-75' : 'scale-100'}`}
                   onClick={onAvatarClick}
                 >
-                  {/* Pulsing Tech Ring */}
-                  <div className="absolute inset-[-6px] rounded-full border border-oracle-red/30 animate-pulse-slow opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  {/* Liquid Tech Ring */}
+                  <div className="absolute inset-[-6px] rounded-full border border-oracle-red/30 bg-oracle-red/10 liquid-shape blur-[4px] opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
                   <div className="absolute inset-[-12px] rounded-full border border-oracle-red/10 animate-[pulse-ring_4s_ease-in-out_infinite] opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                   <div className="relative rounded-full overflow-hidden border-[3px] border-white dark:border-slate-800 shadow-2xl group-hover:border-oracle-red transition-all duration-500 bg-white dark:bg-slate-800 w-14 h-14 md:w-16 md:h-16">

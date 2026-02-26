@@ -38,18 +38,17 @@ const BentoCard: React.FC<BentoCardProps> = ({
       transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
       onClick={onClick}
       className={cn(
-        "group relative bg-white dark:bg-slate-900/50 backdrop-blur-md rounded-[2.5rem] border border-slate-200 dark:border-slate-800/50 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500",
+        "group liquid-card transition-all duration-500 z-10",
         spanClasses[span as keyof typeof spanClasses],
         className
       )}
     >
       {/* Premium Glass Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
 
-      {/* Subtle border glow */}
-      <div className="absolute inset-0 border border-oracle-red/0 group-hover:border-oracle-red/20 rounded-[2.5rem] transition-colors duration-500 pointer-events-none"></div>
-
-      {children}
+      <div className="relative z-10 w-full h-full">
+        {children}
+      </div>
     </motion.div>
   );
 };

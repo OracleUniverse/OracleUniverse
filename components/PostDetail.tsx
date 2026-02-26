@@ -63,15 +63,54 @@ const SqlHighlighter: React.FC<{ code: string }> = ({ code }) => {
   );
 };
 
+const CodeBlock: React.FC<{ code: string; language: string; index: number }> = ({ code, language, index }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div key={index} className="my-10 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-[#0f172a] group relative transform hover:scale-[1.01] transition-transform duration-300">
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800">
+        <div className="flex gap-2">
+          <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
+          <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
+          <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
+        </div>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleCopy}
+            className="text-[10px] font-black text-slate-500 hover:text-oracle-red uppercase tracking-widest flex items-center gap-1.5 transition-colors"
+          >
+            {copied ? (
+              <><i className="fas fa-check text-emerald-500"></i> Copied</>
+            ) : (
+              <><i className="far fa-copy"></i> Copy</>
+            )}
+          </button>
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+            <i className="fas fa-terminal"></i> {language || 'SCRIPT'}
+          </span>
+        </div>
+      </div>
+      <div className="p-6 overflow-x-auto custom-scrollbar bg-[#1e293b]/50">
+        {language === 'sql' ? (
+          <SqlHighlighter code={code} />
+        ) : (
+          <pre className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre">
+            {code}
+          </pre>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const renderContent = (content: string) => {
   const blocks = content.split(/```/g);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-
-  const handleCopy = (code: string, index: number) => {
-    navigator.clipboard.writeText(code);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
-  };
 
   return blocks.map((block, index) => {
     // Code Blocks (Odd indices)
@@ -80,41 +119,7 @@ const renderContent = (content: string) => {
       const language = lines[0].trim().toLowerCase();
       const code = lines.slice(1).join('\n').replace(/^\n+|\n+$/g, '');
 
-      return (
-        <div key={index} className="my-10 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-[#0f172a] group relative transform hover:scale-[1.01] transition-transform duration-300">
-          <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800">
-            <div className="flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handleCopy(code, index)}
-                className="text-[10px] font-black text-slate-500 hover:text-oracle-red uppercase tracking-widest flex items-center gap-1.5 transition-colors"
-              >
-                {copiedIndex === index ? (
-                  <><i className="fas fa-check text-emerald-500"></i> Copied</>
-                ) : (
-                  <><i className="far fa-copy"></i> Copy</>
-                )}
-              </button>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                <i className="fas fa-terminal"></i> {language || 'SCRIPT'}
-              </span>
-            </div>
-          </div>
-          <div className="p-6 overflow-x-auto custom-scrollbar bg-[#1e293b]/50">
-            {language === 'sql' ? (
-              <SqlHighlighter code={code} />
-            ) : (
-              <pre className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre">
-                {code}
-              </pre>
-            )}
-          </div>
-        </div>
-      );
+      return <CodeBlock key={index} code={code} language={language} index={index} />;
     }
 
     // Text Blocks
@@ -200,9 +205,12 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, allPosts, onBack, onPostC
         <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
           <div className="container mx-auto max-w-4xl">
             <div className="flex gap-3 mb-6 animate-slideUp">
-              <span className="glass-pill text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest border-white/20">
-                {post.category}
-              </span>
+              <div className="relative isolate px-4 py-1.5 flex items-center justify-center liquid-shape">
+                <div className="absolute inset-0 bg-oracle-red opacity-90 -z-10 rounded-[inherit]"></div>
+                <span className="text-white text-[10px] font-black uppercase tracking-widest">
+                  {post.category}
+                </span>
+              </div>
             </div>
             <h1 className="text-3xl md:text-6xl font-black text-white leading-tight tracking-tighter mb-6 drop-shadow-2xl animate-slideUp [animation-delay:100ms]">
               {post.title}
@@ -274,13 +282,16 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, allPosts, onBack, onPostC
                 <div
                   key={rp.id}
                   onClick={() => onPostClick(rp)}
-                  className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 cursor-pointer group hover:shadow-xl transition-all"
+                  className="group relative bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl liquid-card overflow-hidden shadow-sm hover:shadow-2xl hover:bg-white/80 dark:hover:bg-slate-900/80 transition-all duration-500 cursor-pointer z-10 border border-slate-200/50 dark:border-slate-800/50"
                 >
+                  <div className="absolute inset-[-50%] bg-oracle-red/10 liquid-shape blur-[30px] opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+
                   <div className="h-32 overflow-hidden">
                     <img src={rp.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   </div>
-                  <div className="p-5">
-                    <h4 className="font-black text-sm text-slate-900 dark:text-white line-clamp-2 group-hover:text-oracle-red transition-colors">{rp.title}</h4>
+                  <div className="p-5 flex flex-col justify-between" style={{ minHeight: '120px' }}>
+                    <h4 className="font-black text-sm text-slate-900 dark:text-white line-clamp-2 group-hover:text-oracle-red transition-colors mb-2">{rp.title}</h4>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-auto">{rp.date}</span>
                   </div>
                 </div>
               ))}
