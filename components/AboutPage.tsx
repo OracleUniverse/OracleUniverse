@@ -40,17 +40,17 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, scrollToContact }) => {
     setStatus('loading');
 
     try {
-      const response = await fetch('https://api.resend.com/emails', {
+      // Replace 'YOUR_FORM_ID' with your actual Formspree form ID
+      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer re_QG1pFw92_54AJciGZTC3KZHVjTbfGwanw'
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
-          from: 'OracleUniverse <onboarding@resend.dev>',
-          to: ['moh.alquraan@gmail.com'],
-          subject: `New Contact Form Message from ${name}`,
-          html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Message:</strong><br/>${message.replace(/\n/g, '<br/>')}</p>`
+          name: name,
+          email: email,
+          message: message
         })
       });
 
