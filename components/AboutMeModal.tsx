@@ -3,9 +3,10 @@ import React from 'react';
 interface AboutMeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onContactClick?: () => void;
 }
 
-const AboutMeModal: React.FC<AboutMeModalProps> = ({ isOpen, onClose }) => {
+const AboutMeModal: React.FC<AboutMeModalProps> = ({ isOpen, onClose, onContactClick }) => {
   if (!isOpen) return null;
 
   return (
@@ -15,7 +16,7 @@ const AboutMeModal: React.FC<AboutMeModalProps> = ({ isOpen, onClose }) => {
         onClick={onClose}
       ></div>
 
-      <div className="relative bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl transform transition-all animate-scaleIn border-t sm:border dark:border-slate-800 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="relative bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl transform transition-all animate-scaleIn border-t sm:border dark:border-slate-800 max-h-[95vh] no-scrollbar">
         {/* Liquid background accent */}
         <div className="absolute top-[30%] left-[-20%] w-[150%] h-[150%] bg-oracle-red/5 liquid-shape blur-[80px] pointer-events-none z-0"></div>
 
@@ -29,29 +30,29 @@ const AboutMeModal: React.FC<AboutMeModalProps> = ({ isOpen, onClose }) => {
           <i className="fas fa-times"></i>
         </button>
 
-        <div className="bg-slate-900 dark:bg-black h-24 sm:h-32 relative">
-          <div className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 p-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md rounded-full shadow-xl z-10 border border-slate-200 dark:border-slate-800">
+        <div className="bg-slate-900 dark:bg-black h-16 sm:h-24 relative">
+          <div className="absolute -bottom-10 sm:-bottom-14 left-6 sm:left-8 p-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md rounded-full shadow-xl z-10 border border-slate-200 dark:border-slate-800">
             <div className="absolute inset-[-10%] bg-oracle-red/20 liquid-shape blur-[10px] -z-10 animate-pulse-slow"></div>
             <img
               src="/avatar.png"
               alt="Author Avatar"
-              className="w-24 h-24 sm:w-40 sm:h-40 rounded-full bg-slate-100 dark:bg-slate-800 object-cover"
+              className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-slate-100 dark:bg-slate-800 object-cover"
             />
           </div>
         </div>
 
-        <div className="relative z-10 pt-16 sm:pt-20 pb-8 sm:pb-10 px-6 sm:px-8">
-          <div className="mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Oracle Architect</h2>
-            <p className="text-oracle-red font-black text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mt-1">Principal Certified Professional</p>
+        <div className="relative z-10 pt-12 sm:pt-16 pb-6 sm:pb-8 px-6 sm:px-8">
+          <div className="mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">Oracle Architect</h2>
+            <p className="text-oracle-red font-black text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mt-0.5">Principal Certified Professional</p>
           </div>
 
-          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 font-medium">
+          <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6 font-medium">
             Passionate about high-performance data systems and cloud architecture. With over 15 years in the Oracle ecosystem,
             I share deep-dives into SQL optimization and OCI best practices.
           </p>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="grid grid-cols-2 gap-3 mb-4 sm:mb-6">
             <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
               <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase mb-1">Expertise</p>
               <p className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200">OCI & Autonomous</p>
@@ -73,7 +74,7 @@ const AboutMeModal: React.FC<AboutMeModalProps> = ({ isOpen, onClose }) => {
               <a href="https://linkedin.com/company/oracleuniverse" target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-[#0A66C2]/10 rounded-xl text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white transition-all">
                 <i className="fab fa-linkedin-in text-base sm:text-lg"></i>
               </a>
-              <button className="flex-grow bg-slate-900 dark:bg-white dark:text-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-slate-800 dark:hover:bg-slate-200 transition active:scale-95 shadow-lg">
+              <button onClick={onContactClick} className="flex-grow bg-slate-900 dark:bg-white dark:text-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-slate-800 dark:hover:bg-slate-200 transition active:scale-95 shadow-lg">
                 Contact Me
               </button>
             </div>

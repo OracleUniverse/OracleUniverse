@@ -1,10 +1,76 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface AboutPageProps {
   onBack?: () => void;
+  scrollToContact?: boolean;
 }
 
-const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
+const AboutPage: React.FC<AboutPageProps> = ({ onBack, scrollToContact }) => {
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const contactSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollToContact) {
+      // Small delay to ensure the page has rendered and settled
+      const timer = setTimeout(() => {
+        if (contactSectionRef.current) {
+          contactSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+          
+          // Focus the input after the scroll starts/finishes
+          setTimeout(() => {
+            if (nameInputRef.current) {
+              nameInputRef.current.focus();
+            }
+          }, 800);
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [scrollToContact]);
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !message) return;
+    
+    setStatus('loading');
+
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer re_QG1pFw92_54AJciGZTC3KZHVjTbfGwanw'
+        },
+        body: JSON.stringify({
+          from: 'OracleUniverse <onboarding@resend.dev>',
+          to: ['moh.alquraan@gmail.com'],
+          subject: `New Contact Form Message from ${name}`,
+          html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Message:</strong><br/>${message.replace(/\n/g, '<br/>')}</p>`
+        })
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setName('');
+        setEmail('');
+        setMessage('');
+        setTimeout(() => setStatus('idle'), 5000);
+      } else {
+        const errorData = await response.json();
+        console.error('Resend API error:', errorData);
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      setStatus('error');
+    }
+  };
+
   return (
     <div className="animate-fadeIn space-y-16 pb-10">
       {onBack && (
@@ -58,28 +124,79 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-[3rem] p-10 md:p-20 border border-slate-100 dark:border-slate-800">
+      <div id="contact" ref={contactSectionRef} className="bg-slate-50 dark:bg-slate-800/50 rounded-[3rem] p-10 md:p-20 border border-slate-100 dark:border-slate-800">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-4">
             <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">GET IN TOUCH</h2>
             <p className="text-slate-500 font-medium">Whether it's a consulting inquiry or just to say hi, I'd love to hear from you.</p>
           </div>
           
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => e.preventDefault()}>
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Name</label>
-              <input type="text" className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-oracle-red outline-none transition dark:text-white" placeholder="John Doe" />
+              <input 
+                id="contact-name"
+                ref={nameInputRef}
+                type="text" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-oracle-red outline-none transition dark:text-white" 
+                placeholder="John Doe" 
+              />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email</label>
-              <input type="email" className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-oracle-red outline-none transition dark:text-white" placeholder="john@example.com" />
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-oracle-red outline-none transition dark:text-white" 
+                placeholder="john@example.com" 
+              />
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Message</label>
-              <textarea rows={5} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-oracle-red outline-none transition dark:text-white" placeholder="How can I help you?"></textarea>
+              <textarea 
+                rows={5} 
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                required
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-oracle-red outline-none transition dark:text-white" 
+                placeholder="How can I help you?"
+              ></textarea>
             </div>
+            
+            {status === 'success' && (
+              <div className="md:col-span-2 p-4 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl text-sm font-medium border border-green-200 dark:border-green-800/50 flex items-center gap-3">
+                <i className="fas fa-check-circle"></i>
+                Your message has been sent successfully!
+              </div>
+            )}
+            
+            {status === 'error' && (
+              <div className="md:col-span-2 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-sm font-medium border border-red-200 dark:border-red-800/50 flex items-center gap-3">
+                <i className="fas fa-exclamation-circle"></i>
+                Failed to send message. Please try again later.
+              </div>
+            )}
+
             <div className="md:col-span-2 pt-4">
-              <button className="w-full bg-oracle-red text-white py-6 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-red-500/20 hover:scale-[1.02] active:scale-95 transition">Send Message</button>
+              <button 
+                type="submit"
+                disabled={status === 'loading'}
+                className="w-full bg-oracle-red disabled:opacity-70 disabled:cursor-not-allowed text-white py-6 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-red-500/20 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2"
+              >
+                {status === 'loading' ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i>
+                    Sending...
+                  </>
+                ) : (
+                  'Send Message'
+                )}
+              </button>
             </div>
           </form>
         </div>

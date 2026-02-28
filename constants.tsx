@@ -39,6 +39,254 @@ export const ORACLE_NEWS: OracleNews[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    id: '17',
+    title: '4 SQL Syntax Upgrades You Need to Use Today',
+    excerpt: "For years, Oracle developers have had to memorize a specific set of \"Oracle-isms\"—quirky workarounds needed to write standard SQL. With Oracle 23ai and 26ai, those days are over.",
+    content: `
+      ## 📝 Introduction
+      For years, Oracle developers have had to memorize a specific set of "Oracle-isms"—quirky workarounds needed to write standard SQL. If you wanted to calculate a simple math equation, you had to query a dummy table. If you wanted a true/false column, you had to fake it with numbers.
+
+      With the release of Oracle 23ai and the newly minted Oracle 26ai, those days are over. Oracle has completely modernized its SQL engine to align with developer expectations. Let’s look at the top four Quality of Life (QoL) SQL syntax upgrades you should start using today.
+
+      ### 1. The End of \`FROM DUAL\`
+      In older versions of Oracle, every \`SELECT\` statement strictly required a \`FROM\` clause. To get around this when evaluating expressions, developers used the dummy \`DUAL\` table. It was extra typing for no real benefit. Today, Oracle natively supports developer-friendly expression evaluation.
+
+      **🚫 The Old Way:**
+      \`\`\`sql
+      SELECT SYSDATE FROM DUAL;
+      SELECT UPPER('hello world') FROM DUAL;
+      \`\`\`
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      SELECT SYSDATE;
+      SELECT UPPER('hello world');
+      \`\`\`
+
+      ### 2. Native \`BOOLEAN\` Data Type
+      Historically, Oracle SQL lacked a true boolean data type. Developers had to use \`NUMBER(1)\` (storing 1 or 0) or \`VARCHAR2(1)\` (storing 'Y' or 'N') and enforce it with \`CHECK\` constraints. Now, \`TRUE\` and \`FALSE\` are native to the SQL engine.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      CREATE TABLE tasks (
+          task_name VARCHAR2(100),
+          is_completed BOOLEAN DEFAULT FALSE
+      );
+
+      INSERT INTO tasks VALUES ('Learn Oracle 26ai', TRUE);
+
+      -- Notice how clean the WHERE clause is now!
+      SELECT * FROM tasks WHERE is_completed;
+      \`\`\`
+
+      ### 3. \`GROUP BY\` Column Aliases
+      Have you ever written a complex mathematical formula in your \`SELECT\` list, only to realize you have to copy and paste that exact formula into your \`GROUP BY\` clause? It violated the DRY (Don't Repeat Yourself) principle and made code hard to read. Now, you can simply reference the alias!
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      SELECT EXTRACT(YEAR FROM hire_date) AS hire_year, COUNT(*) 
+      FROM employees 
+      GROUP BY hire_year; -- Clean, readable, and maintainable!
+      \`\`\`
+
+      ### 4. Idempotent DDL (\`IF EXISTS\` / \`IF NOT EXISTS\`)
+      When writing setup scripts, trying to \`DROP\` a table that didn't exist threw an ugly \`ORA-00942\` error. To prevent setup scripts from failing, DBAs had to write clunky PL/SQL exception handlers. Oracle now supports standard idempotent DDL.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      DROP TABLE IF EXISTS my_temp_table;
+      CREATE TABLE IF NOT EXISTS users (id NUMBER, name VARCHAR2(50));
+      \`\`\`
+      
+      **Conclusion:** Stop writing SQL like it's 2012! By adopting these four features, your scripts will be shorter, cleaner, and much easier for junior developers to understand.
+    `,
+    author: 'Oracle Developer',
+    date: 'Feb 28, 2026',
+    category: 'SQL',
+    image: '/sql-syntax-modern.png',
+    tags: ['SQL', '23ai', '26ai', 'Oracle']
+  },
+  {
+    id: '16',
+    title: 'Supercharge Your Database – High-Performance SQL',
+    excerpt: 'Explore the massive data manipulation (DML) and concurrency enhancements introduced in Oracle 23ai/26ai that completely change how we build high-traffic apps.',
+    content: `
+      ## 🚀 Introduction
+      While syntax upgrades make your code prettier, performance upgrades keep your applications running when millions of users hit your system. In this article, we cover the massive data manipulation (DML) and concurrency enhancements introduced in Oracle 23ai/26ai that completely change how we build high-traffic apps.
+
+      ### 1. Lock-Free Reservations (The E-Commerce Game Changer)
+      Imagine you are building an e-commerce checkout. If 100 people try to buy the same popular item simultaneously, older databases put a "lock" on the inventory row. 99 people must wait in a queue for the 1st person's transaction to finish. Oracle solved this with \`RESERVABLE\` columns. It allows concurrent transactions to update a column *without* locking the row, mathematically guaranteeing the balance won't drop below zero!
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      CREATE TABLE products (
+          product_id NUMBER PRIMARY KEY,
+          product_name VARCHAR2(100),
+          quantity_in_stock NUMBER RESERVABLE -- The Magic Keyword!
+      );
+
+      -- 100 users can run this update simultaneously without locking each other!
+      UPDATE products 
+      SET quantity_in_stock = quantity_in_stock - 1 
+      WHERE product_id = 99;
+      \`\`\`
+
+      ### 2. Multi-Row \`INSERT\` with a Single \`VALUES\` Clause
+      Inserting multiple rows at once used to require the strange \`INSERT ALL\` syntax or looping through multiple \`INSERT INTO\` statements. Now, Oracle supports standard comma-separated row inserts, massively speeding up batch loading.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      INSERT INTO colors (id, name) 
+      VALUES 
+        (1, 'Red'), 
+        (2, 'Green'), 
+        (3, 'Blue');
+      \`\`\`
+
+      ### 3. Direct Joins in \`UPDATE\` and \`DELETE\`
+      Updating records in Table A based on a condition in Table B used to require slow correlated subqueries. You can now use a \`FROM\` clause directly inside an \`UPDATE\` statement.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      UPDATE employees e
+      SET e.salary = e.salary * 1.10
+      FROM departments d
+      WHERE e.dept_id = d.id 
+        AND d.name = 'Sales';
+      \`\`\`
+
+      ### 4. Enhanced \`RETURNING INTO\` (Old & New Values)
+      When updating a row in PL/SQL, you could use \`RETURNING INTO\` to see the *new* value. But if you wanted the *old* value for an audit log, you had to run a separate \`SELECT\` query first. Now, you can grab both instantly.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      DECLARE
+          v_old_sal NUMBER;
+          v_new_sal NUMBER;
+      BEGIN
+          UPDATE employees SET salary = salary * 1.10 WHERE emp_id = 101
+          RETURNING OLD salary, NEW salary INTO v_old_sal, v_new_sal;
+          
+          DBMS_OUTPUT.PUT_LINE('Salary increased from ' || v_old_sal || ' to ' || v_new_sal);
+      END;
+      \`\`\`
+    `,
+    author: 'Performance Expert',
+    date: 'Feb 28, 2026',
+    category: 'Database',
+    image: '/db-performance-high.png',
+    tags: ['Database', 'Performance', 'SQL', 'Concurrency']
+  },
+  {
+    id: '15',
+    title: 'Modern Database Magic – JSON & JavaScript',
+    excerpt: "JSON Relational Duality allows you to store your data in highly normalized, secure relational tables while exposing it as a Duality View. Plus, run JavaScript inside the database kernel.",
+    content: `
+      ## 🏗️ Introduction
+      For years, the developer world has been split. Application developers love NoSQL (JSON) databases like MongoDB because fetching a single JSON document is incredibly easy. DBAs prefer Relational Databases (Oracle) because they guarantee data security and prevent duplication. In Oracle 23ai and 26ai, you no longer have to choose.
+
+      ### 1. JSON Relational Duality (The Ultimate Bridge)
+      JSON Relational Duality allows you to store your data in highly normalized, secure relational tables (e.g., \`Orders\`, \`Order_Items\`, \`Customers\`). However, you expose this data to your application developers as a **Duality View**.
+
+      **How it works:** The App Developer sends a simple REST API \`PUT\` request containing a nested JSON document. Oracle intercepts the JSON, shreds it, updates the underlying relational tables securely, handles the locks, and ensures data integrity. *The Result?* The developer gets the ease of MongoDB, and the DBA gets the security of Oracle. No complex ORM tools required!
+
+      ### 2. Multilingual Engine (MLE): JavaScript inside the Database
+      Not every developer wants to learn PL/SQL, but almost every developer knows JavaScript. Historically, if you wanted to process data with JS, you had to pull millions of rows out of the database and across the network into a Node.js server—a massive performance killer.
+
+      Oracle embedded the V8 JavaScript engine directly inside the database kernel via the Multilingual Engine (MLE). You can now write stored procedures natively in JavaScript!
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      CREATE OR REPLACE MLE MODULE my_js_module LANGUAGE JAVASCRIPT AS
+      export function calculateDiscount(price, discountPercent) {
+          if (price < 0) return 0;
+          return price - (price * (discountPercent / 100));
+      }
+      /
+
+      -- Call the JS function directly in your SQL!
+      SELECT product_name, 
+             calculateDiscount(price, 20) AS discounted_price 
+      FROM products;
+      \`\`\`
+    `,
+    author: 'Modern Architect',
+    date: 'Feb 28, 2026',
+    category: 'Database',
+    image: '/json-js-oracle.png',
+    tags: ['JSON', 'JavaScript', 'MLE', 'Database']
+  },
+  {
+    id: '14',
+    title: 'DBA Quality of Life – Security & Architecture',
+    excerpt: 'The role of the DBA is shifting. Oracle 23ai and 26ai introduced powerful features like Schema-Level Privileges and SQL Domains designed to make life easier.',
+    content: `
+      ## 🛡️ Introduction
+      The role of the Database Administrator (DBA) is shifting. DBAs spend less time manually installing software and more time managing cloud architecture, data models, and security. Oracle 23ai and 26ai introduced powerful features designed specifically to make the DBA's life easier.
+
+      ### 1. Schema-Level Privileges
+      If a developer needed read access to every table in an \`HR\` schema, the DBA used to write a script to \`GRANT SELECT\` on 50 individual tables. If a new table was added later, the developer lost access until the DBA ran another grant. Now, you can grant privileges to an entire schema dynamically!
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      GRANT SELECT ANY TABLE ON SCHEMA hr TO data_analyst_user;
+      \`\`\`
+
+      ### 2. The \`DB_DEVELOPER_ROLE\`
+      Every time a DBA creates a new user for an application developer, they have to remember a laundry list of privileges (\`CREATE SESSION\`, \`CREATE TABLE\`, etc.). Often, out of frustration, DBAs just grant the \`DBA\` role—a massive security risk. Oracle finally created a built-in, least-privilege role designed perfectly for application builders.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      CREATE USER modern_dev IDENTIFIED BY StrongPassword123;
+      GRANT DB_DEVELOPER_ROLE TO modern_dev;
+      \`\`\`
+
+      ### 3. SQL Domains (Centralized Data Rules)
+      How many times have you written the exact same \`CHECK\` constraint to validate an email address across five different tables? SQL Domains allow you to define a data rule *once* and apply it anywhere.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      -- 1. Create the Domain once
+      CREATE DOMAIN email_domain AS VARCHAR2(255)
+         CONSTRAINT CHECK (REGEXP_LIKE(email_domain, '^.*@.*\\..*$'));
+
+      -- 2. Apply it to any table
+      CREATE TABLE customers (id NUMBER, contact_email email_domain);
+      CREATE TABLE employees (id NUMBER, work_email email_domain);
+      \`\`\`
+    `,
+    author: 'Senior DBA',
+    date: 'Feb 28, 2026',
+    category: 'Security',
+    image: '/dba-security.png',
+    tags: ['Security', 'DBA', 'Architecture', 'SQL Domains']
+  },
+  {
+    id: '13',
+    title: 'Low-Code Revolution – Top Oracle APEX Features',
+    excerpt: 'Oracle APEX is dominating the enterprise low-code space. Experience Git-style branching, native workflows, and Generative AI integrations.',
+    content: `
+      ## 🚀 Introduction
+      Oracle APEX is dominating the enterprise low-code space. If you are a developer looking to build web and mobile applications 20x faster than traditional React/Node.js stacks, APEX is the tool to learn. With recent updates running on the 23ai/26ai database architecture, APEX has solved its biggest historical limitations.
+
+      ### 1. Working Copies (Git for APEX)
+      For years, the biggest complaint about APEX was team development. If Developer A and Developer B edited the same application at the same time, they would overwrite each other's changes. Oracle introduced **Working Copies**. Developer A can now create a "Branch" (working copy) of the main app, build a new page in isolation, test it, and then visually merge it back into the Main App. It brings the power of Git-style branching directly into the low-code browser environment!
+
+      ### 2. Native APEX Workflows
+      Almost every enterprise app requires an approval process. In the past, developers had to build custom PL/SQL state machines and hidden tables to track this. APEX now features a visual, drag-and-drop **Workflow Builder**. You can define multi-step business processes, timeouts, and email notifications without writing a single line of backend logic.
+
+      ### 3. APEX Generative AI Integrations
+      AI is no longer a buzzword; it's an expectation. APEX makes it incredibly easy to integrate AI into your applications. Through declarative "Generative AI" dynamic actions, you can build an app where a user types a rough product description, and APEX automatically calls out to OCI Generative AI (or OpenAI) to summarize the text, translate it, or fix the grammar—no complex REST API coding required. Furthermore, the APEX builder itself now features an AI Assistant to help you write SQL queries and build pages using natural language!
+
+      > **💡 Creator Tip:** Don't just read about this—go to [cloud.oracle.com](https://cloud.oracle.com), spin up a free Autonomous Database, and try these exact scripts today!
+    `,
+    author: 'APEX Specialist',
+    date: 'Feb 28, 2026',
+    category: 'APEX',
+    image: '/apex-lowcode.png',
+    tags: ['APEX', 'Low-Code', 'Generative AI', 'Workflow']
+  },
+  {
     id: '12',
     title: 'Real-Time Messaging in Oracle APEX: A Self-Hosted WebSocket Solution',
     excerpt: 'Bridge the gap between your Oracle Database and the browser with a dedicated Node.js WebSocket bus. Send messages from PL/SQL to any APEX page instantly.',
@@ -430,25 +678,108 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     id: '1',
-    title: 'Optimizing SQL Queries in Oracle 23c',
-    excerpt: 'Explore the new AI-powered query optimization features in the latest Oracle Database 23c release.',
+    title: 'Optimizing SQL Queries in Oracle 23ai & 26ai',
+    excerpt: "Optimizing an Oracle database is no longer just about adding indexes; it's about utilizing next-generation architecture, AI-driven plan management, and eliminating developer bottlenecks.",
     content: `
-      ## The Evolution of Query Optimization
-      Oracle Database 23c introduces several revolutionary features aimed at making SQL optimization more efficient than ever. 
-      One of the standout features is **AI Vector Search**, which allows for seamless integration of structured and unstructured data.
+      ## 📝 Introduction
+      For decades, optimizing an Oracle database meant staring at a massive, confusing Execution Plan, trying to figure out why the database chose a "Full Table Scan" instead of an "Index Range Scan," and adding hidden \`/*+ HINTS */\` into your code.
 
-      ### New Features in 23c
-      1. **SQL Transpilation**: Automatically convert SQL dialects to Oracle SQL.
-      2. **Automatic SQL Tuning Sets**: Improved background optimization.
-      3. **Boolean Data Type**: Finally, a native boolean type in Oracle!
+      With the release of **Oracle 23ai** and the cutting-edge **Oracle 26ai**, the database has become *smart*. Performance tuning is no longer just about adding indexes; it is about utilizing next-generation architecture, AI-driven plan management, and eliminating developer bottlenecks.
 
-      To optimize your queries, focus on the new execution plan hints and the automated indexing capabilities...
+      Here are the top 5 ways to optimize your SQL queries and application performance in modern Oracle databases.
+
+      ### 1. Eliminate Context Switching with "SQL Macros"
+      **The Performance Killer:** Developers love writing PL/SQL functions to encapsulate business logic. But when you call a PL/SQL function inside a standard SQL \`SELECT\` statement that returns 1 million rows, the database engine has to switch between the SQL engine and the PL/SQL engine 1 million times. This is called a **Context Switch**, and it is brutally slow.
+
+      **The 23ai/26ai Fix: SQL Macros.** Oracle introduced SQL Macros to solve this. When you tag a function as a \`SQL_MACRO\`, Oracle doesn't run it row-by-row. Instead, at compile time, it takes the logic *inside* your function and dynamically injects it directly into your SQL query.
+
+      **🚫 The Old Way (Slow due to context switching):**
+      \`\`\`sql
+      CREATE OR REPLACE FUNCTION get_total (price NUMBER) RETURN NUMBER IS
+      BEGIN
+          RETURN price * 1.15; -- Adds 15% tax
+      END;
+      /
+      -- Runs the PL/SQL engine 1,000,000 times!
+      SELECT get_total(price) FROM massive_sales_table;
+      \`\`\`
+
+      **✅ The Modern Way (Lightning Fast SQL Macro):**
+      \`\`\`sql
+      CREATE OR REPLACE FUNCTION get_total_macro (price NUMBER) 
+      RETURN VARCHAR2 SQL_MACRO IS
+      BEGIN
+          RETURN 'price * 1.15'; -- Returns the actual SQL text!
+      END;
+      /
+      -- The DB rewrites this behind the scenes as: SELECT price * 1.15 FROM massive_sales_table;
+      -- Zero context switches!
+      SELECT get_total_macro(price) FROM massive_sales_table;
+      \`\`\`
+
+      ### 2. Replace Redis with "Oracle True Cache"
+      **The Performance Killer:** When an application runs the same read-heavy query thousands of times a second, hitting the main database is too heavy. Developers usually fix this by adding a middle-tier cache like Redis. But this means developers have to manually write code to keep Redis and Oracle in sync, leading to stale data bugs.
+
+      **The 23ai Fix: True Cache.** Oracle 23ai introduced **True Cache**, an in-memory, diskless cache that sits in front of your database. It automatically syncs with your primary database in real-time. It requires **zero application code changes**. You simply tell your app's database driver to route "Read-Only" queries to the True Cache. You get Redis-level speed with Oracle-level consistency.
+
+      ### 3. AI-Driven Real-Time SQL Plan Management (26ai)
+      **The Performance Killer:** "Plan Regression" is a DBA's worst nightmare. A query that has been running in 0.1 seconds suddenly takes 30 seconds because the internal optimizer randomly chose a new, inefficient Execution Plan.
+
+      **The 26ai Fix: Autonomous Self-Healing.** In Oracle 26ai, the database acts as its own DBA. Using AI and high-frequency background statistics, the database actively monitors query execution times. If it detects a SQL query suddenly slowed down, it will **automatically and instantly quarantine the bad plan**, test it in the background, and roll back to the previously known good plan.
+
+      ### 4. Vector Indexes for Lightning-Fast AI Queries
+      **The Performance Killer:** With Generative AI, developers store text, images, and documents as "Vectors". Running a mathematical similarity search across millions of rows requires calculating the distance between massive arrays of numbers. A standard B-Tree index cannot handle this; it requires a full table scan.
+
+      **The 23ai/26ai Fix: HNSW Vector Indexes.** Oracle introduced specialized indexes specifically for AI workloads. By creating an Inverted File Flat (IVF) or Hierarchical Navigable Small World (HNSW) index, you reduce AI similarity search times from minutes to milliseconds.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      -- Create an AI index that groups similar vectors into "neighborhoods"
+      CREATE VECTOR INDEX my_ai_docs_idx 
+      ON company_documents (document_vector)
+      ORGANIZATION NEIGHBORHOOD GRAPH (
+          DISTANCE COSINE
+          WITH TARGET ACCURACY 95
+      );
+
+      -- Instantly find the top 5 most relevant documents to the user's search
+      SELECT document_name 
+      FROM company_documents
+      ORDER BY VECTOR_DISTANCE(document_vector, :user_search_vector, COSINE)
+      FETCH FIRST 5 ROWS ONLY;
+      \`\`\`
+
+      ### 5. Stop Joining 10 Tables: Use JSON Relational Duality
+      **The Performance Killer:** Fetching complex business objects (Order, Customer, Products, Address) requires joining 5 to 10 massive tables. Deeply nested joins are computationally expensive and slow down REST APIs.
+
+      **The 23ai Fix: Duality Views.** Instead of running a massive 10-table join every time, you create a **JSON Relational Duality View**. The database pre-assembles the relational data into a high-performance JSON document format. When your application queries the view, Oracle fetches the complete hierarchical JSON document in a single, hyper-optimized read operation.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      -- The app simply fetches the document by ID. 
+      -- No JOINs required! Fast, clean, and highly optimized.
+      SELECT data 
+      FROM order_duality_view 
+      WHERE json_value(data, '$.order_id') = 1005;
+      \`\`\`
+
+      ---
+      ### 🎓 Summary for Developers & DBAs
+      Optimizing Oracle is no longer about blindly throwing B-Tree indexes at slow queries.
+
+      1. Use **SQL Macros** to stop PL/SQL context switching.
+      2. Let the DB handle caching with **True Cache**.
+      3. Rely on **26ai's Autonomous Optimizer** to catch plan regressions.
+      4. Use **Vector Indexes** for AI data.
+      5. Use **Duality Views** to stop joining 10 tables for a simple API request.
+
+      > **💡 Instructor Challenge:** Don't take my word for it. Open your Oracle Cloud Always Free tier, write a standard PL/SQL function inside a 1-million row SELECT statement, time it, and then rewrite it as a \`SQL_MACRO\`. You will be shocked by the speed difference!
     `,
-    author: 'Oracle Guru',
-    date: 'Oct 15, 2024',
+    author: 'Oracle Performance Master',
+    date: 'Feb 28, 2026',
     category: 'SQL',
-    image: '/Optimize SQL.jpg',
-    tags: ['SQL', '23c', 'Performance']
+    image: '/sql-optimization-26ai.png',
+    tags: ['SQL', '23ai', '26ai', 'Performance', 'AI']
   },
   {
     id: '2',

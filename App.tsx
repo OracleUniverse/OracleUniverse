@@ -82,14 +82,27 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const [scrollToContact, setScrollToContact] = useState(false);
+
+  const handleGoToContact = () => {
+    setIsAboutModalOpen(false);
+    setCurrentView('about');
+    setSelectedPost(null);
+    setActiveMobileTab('feed');
+    setScrollToContact(true);
+    // Reset the state after a delay to allow re-triggering if needed
+    setTimeout(() => setScrollToContact(false), 2000);
+  };
+
   const navigateTo = (view: ViewState) => {
     setCurrentView(view);
     setSelectedPost(null);
     setActiveMobileTab('feed');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const scrollToTop = () => {
+    setScrollToContact(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -145,7 +158,7 @@ const App: React.FC = () => {
       case 'post':
         return selectedPost ? <div className="max-w-4xl mx-auto w-full"><PostDetail post={selectedPost} allPosts={BLOG_POSTS} onBack={handleGoHome} onPostClick={handlePostClick} /></div> : null;
       case 'about':
-        return <AboutPage onBack={handleGoHome} />;
+        return <AboutPage onBack={handleGoHome} scrollToContact={scrollToContact} />;
       case 'home':
       default:
         return (
@@ -199,7 +212,8 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      <AboutMeModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
+      <AboutMeModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} onContactClick={handleGoToContact} />
+
       <BottomNav activeTab={activeMobileTab} onTabChange={handleTabChange} />
 
       <footer className="hidden lg:block bg-[#0a0a0a] text-white overflow-hidden relative border-t border-white/5 mt-auto">
@@ -215,8 +229,8 @@ const App: React.FC = () => {
                   <img src="/avatar.png" className="w-full h-full object-cover rounded-xl" alt="Footer Logo" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Oracle</h3>
-                  <p className="text-oracle-red font-black text-[10px] uppercase tracking-[0.2em]">Universe</p>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">ORACLE</h3>
+                  <p className="text-oracle-red font-black text-[10px] uppercase tracking-[0.2em]">UNIVERSE</p>
                 </div>
               </div>
               <p className="text-slate-400 text-base font-medium leading-relaxed max-sm">
@@ -246,7 +260,8 @@ const App: React.FC = () => {
                   <li><a href="#" className="hover:text-[#1877F2] transition-colors flex items-center gap-3"><i className="fab fa-facebook-f w-5"></i> Facebook</a></li>
                   <li><a href="https://youtube.com/@oracle-universe?si=nCN9JzTTuPf2MVh1" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF0000] transition-colors flex items-center gap-3"><i className="fab fa-youtube w-5"></i> YouTube</a></li>
                   <li><a href="https://linkedin.com/company/oracleuniverse" target="_blank" rel="noopener noreferrer" className="hover:text-[#0A66C2] transition-colors flex items-center gap-3"><i className="fab fa-linkedin-in w-5"></i> LinkedIn</a></li>
-                  <li><button onClick={() => setIsAboutModalOpen(true)} className="hover:text-white transition-colors flex items-center gap-3"><i className="fas fa-envelope w-5"></i> Direct Mail</button></li>
+                  <li><button onClick={handleGoToContact} className="hover:text-white transition-colors flex items-center gap-3"><i className="fas fa-envelope w-5"></i> Direct Mail</button></li>
+
                 </ul>
               </div>
             </div>
@@ -269,7 +284,7 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] text-slate-500 font-black uppercase tracking-[0.3em]">
-            <div>© {new Date().getFullYear()} Oracle Universe. All rights reserved.</div>
+            <div>© {new Date().getFullYear()} ORACLE UNIVERSE. All rights reserved.</div>
             <div className="flex gap-8 text-[9px] text-slate-600 font-black uppercase tracking-widest">
               <a href="#" className="hover:text-white transition">Privacy Policy</a>
               <a href="#" className="hover:text-white transition">Terms of Service</a>

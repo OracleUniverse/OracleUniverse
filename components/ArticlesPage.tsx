@@ -17,7 +17,12 @@ const ArticlesPage: React.FC<ArticlesPageProps> = ({ posts, activeCategory, onCa
   if (selectedPost) {
     return (
       <div className="animate-fadeIn max-w-4xl mx-auto py-4">
-        <PostDetail post={selectedPost} onBack={() => setSelectedPost(null)} />
+        <PostDetail 
+          post={selectedPost} 
+          allPosts={posts} 
+          onBack={() => setSelectedPost(null)} 
+          onPostClick={setSelectedPost} 
+        />
       </div>
     );
   }
@@ -26,7 +31,7 @@ const ArticlesPage: React.FC<ArticlesPageProps> = ({ posts, activeCategory, onCa
     <div className="animate-fadeIn space-y-12">
       {/* Title Header */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">Technical Universe</h1>
+        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">Technical <span className="text-oracle-red">ORACLE UNIVERSE</span></h1>
         <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">Deep dives into performance, architecture, and code.</p>
       </div>
 

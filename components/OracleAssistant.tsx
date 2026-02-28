@@ -28,7 +28,7 @@ const OracleAssistant: React.FC = () => {
     try {
       const result = await getOracleHelp(userMessage);
       setMessages(prev => [...prev, { role: 'model', text: result }]);
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, { role: 'model', text: "Error: Service interruption. Please verify your connection." }]);
     } finally {
       setIsTyping(false);

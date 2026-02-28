@@ -54,9 +54,6 @@ const Header: React.FC<HeaderProps> = ({
     if (theme === 'dark') return 'fa-moon';
     return 'fa-star';
   };
-
-  const socialIconClass = "w-10 h-10 flex items-center justify-center bg-transparent rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300 hover:scale-110 hover:text-oracle-red";
-
   return (
     <>
       {/* Reading Progress Bar */}
@@ -93,13 +90,12 @@ const Header: React.FC<HeaderProps> = ({
                   <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-[3px] border-white dark:border-slate-950 rounded-full shadow-lg"></div>
                 </div>
 
-                {/* Dynamic Brand Name */}
                 <div
                   className={`transition-all duration-500 flex flex-col cursor-pointer active:opacity-70 ${scrolled ? 'opacity-0 w-0 overflow-hidden md:opacity-100 md:w-auto' : 'opacity-100'}`}
                   onClick={onHomeClick}
                 >
                   <h1 className="font-black uppercase tracking-tighter leading-none text-slate-900 dark:text-white text-xl md:text-2xl">
-                    Oracle <span className="text-oracle-red">Universe</span>
+                    ORACLE <span className="text-oracle-red">UNIVERSE</span>
                   </h1>
                 </div>
               </div>
@@ -107,9 +103,15 @@ const Header: React.FC<HeaderProps> = ({
               {/* Navigation & Controls */}
               <div className="flex items-center gap-3">
                 <div className="hidden xl:flex items-center gap-1 mr-4 border-r border-slate-200 dark:border-slate-800 pr-4">
-                  <a href="#" className={socialIconClass}><i className="fab fa-facebook-f text-lg"></i></a>
-                  <a href="https://youtube.com/@oracle-universe?si=nCN9JzTTuPf2MVh1" target="_blank" rel="noopener noreferrer" className={socialIconClass}><i className="fab fa-youtube text-lg"></i></a>
-                  <a href="https://linkedin.com/company/oracleuniverse" target="_blank" rel="noopener noreferrer" className={socialIconClass}><i className="fab fa-linkedin-in text-lg"></i></a>
+                  <a href="#" className="w-10 h-10 flex items-center justify-center bg-[#1877F2]/10 rounded-full text-[#1877F2] hover:bg-[#1877F2] hover:text-white transition-all duration-300 hover:scale-110">
+                    <i className="fab fa-facebook-f text-lg"></i>
+                  </a>
+                  <a href="https://youtube.com/@oracle-universe?si=nCN9JzTTuPf2MVh1" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-[#FF0000]/10 rounded-full text-[#FF0000] hover:bg-[#FF0000] hover:text-white transition-all duration-300 hover:scale-110">
+                    <i className="fab fa-youtube text-lg"></i>
+                  </a>
+                  <a href="https://linkedin.com/company/oracleuniverse" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-[#0A66C2]/10 rounded-full text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white transition-all duration-300 hover:scale-110">
+                    <i className="fab fa-linkedin-in text-lg"></i>
+                  </a>
                 </div>
 
                 <div className={`rounded-full p-2 flex items-center gap-2 transition-all duration-300 ${scrolled ? 'bg-slate-100/50 dark:bg-slate-800/50' : 'glass-pill'}`}>

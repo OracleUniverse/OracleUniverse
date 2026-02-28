@@ -25,7 +25,7 @@ const HomePage: React.FC<HomePageProps> = ({
       {/* Hero Header */}
       <div className="relative z-10 text-center space-y-4 max-w-4xl mx-auto py-12">
         <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter uppercase mt-8">
-          Oracle <span className="text-oracle-red text-glow">Universe</span>
+          ORACLE <span className="text-oracle-red text-glow">UNIVERSE</span>
         </h1>
       </div>
 
