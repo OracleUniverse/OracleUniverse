@@ -40,12 +40,10 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, scrollToContact }) => {
     setStatus('loading');
 
     try {
-      // Replace 'YOUR_FORM_ID' with your actual Formspree form ID
-      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
         },
         body: JSON.stringify({
           name: name,
@@ -62,7 +60,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, scrollToContact }) => {
         setTimeout(() => setStatus('idle'), 5000);
       } else {
         const errorData = await response.json();
-        console.error('Resend API error:', errorData);
+        console.error('Submission error:', errorData);
         setStatus('error');
       }
     } catch (error) {
