@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript in Oracle APEX & Database 23ai/26ai</title>
+    <style>
+        :root {
+            --oracle-red: #c74634;
+            --code-bg: #2d2d2d;
+            --code-color: #f8f8f2;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --js-yellow: #f1e05a;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            color: var(--oracle-red);
+            font-size: 2.5em;
+        }
+        header p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        article {
+            background: #fff;
+            padding: 40px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        article h1 {
+            color: var(--oracle-red);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 2em;
+        }
+        article h3 {
+            color: #2c3e50;
+            margin-top: 35px;
+            border-left: 4px solid var(--js-yellow);
+            padding-left: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul, ol {
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95em;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        code {
+            background-color: #eee;
+            color: #d63384;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        .icon {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+        .tip-box {
+            background-color: #fff9e6;
+            border-left: 4px solid #f1c40f;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 0 5px 5px 0;
+        }
+        .problem-text {
+            color: #d35400;
+            font-weight: bold;
+        }
+        .solution-text {
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>The Modern Oracle Developer</h1>
+        <p>Full-Stack Engineering with Oracle</p>
+    </header>
+
+    <article>
+        <h1>💛 JavaScript Everywhere: Oracle APEX & DB 23ai/26ai</h1>
+        
+        <p><strong>Introduction</strong><br>
+        For decades, the line was clearly drawn: JavaScript was for the frontend (the browser), and PL/SQL was for the backend (the database). If you wanted to process 1 million rows of data using a specialized JavaScript library, you had to extract that data across the network to a Node.js server, process it, and send it back. It was slow and inefficient.</p>
+        
+        <p>Today, that boundary has vanished. With the <strong>Multilingual Engine (MLE)</strong> powered by GraalVM inside Oracle Database 23ai and 26ai, the V8 JavaScript engine now runs natively <em>inside the database kernel</em>. Furthermore, Oracle APEX has deeply integrated JavaScript into both its front and back ends.</p>
+
+        <p>Whether you are a React developer learning Oracle or an old-school DBA adapting to the modern web, here is how you use JavaScript in the Oracle ecosystem.</p>
+
+        <!-- Point 1 -->
+        <h3>1. Database Server-Side: Inline JavaScript Functions</h3>
+        <p><span class="problem-text">The Problem:</span> You need to write a complex string-parsing algorithm or a mathematical calculation. Doing this in PL/SQL can be verbose, but doing it in JavaScript is incredibly easy.</p>
+        <p><span class="solution-text">The Fix: MLE Inline Functions.</span> In Oracle 23ai+, you can create standard database functions but write the logic entirely in JavaScript. You can even call these JavaScript functions directly in your standard SQL <code>SELECT</code> statements.</p>
+        
+        <p><span class="icon">✅</span> <strong>The Modern Way:</strong></p>
+<pre><code>CREATE OR REPLACE FUNCTION calc_discount(price NUMBER, discount NUMBER) 
+RETURN NUMBER 
+AS MLE LANGUAGE JAVASCRIPT
+q'[
+    // Pure JavaScript running inside the database!
+    if (price < 0) return 0;
+    return price - (price * (discount / 100));
+]';
+/
+
+-- Call the JavaScript function from standard SQL
+SELECT product_name, calc_discount(price, 20) AS sale_price 
+FROM products;</code></pre>
+
+        <!-- Point 2 -->
+        <h3>2. Database Server-Side: Importing NPM Packages</h3>
+        <p><span class="problem-text">The Problem:</span> You need to validate complex data (like checking if an email is valid, or parsing a complex URL). Why write 500 lines of custom PL/SQL when the open-source community already built the perfect NPM package for it?</p>
+        <p><span class="solution-text">The Fix: MLE Modules.</span> You can load popular open-source JavaScript libraries (like <code>validator.js</code> or <code>marked.js</code>) directly into the Oracle Database as an "MLE Module" and use them to process your relational tables.</p>
+        
+        <p><span class="icon">✅</span> <strong>The Modern Way:</strong></p>
+        <ol>
+            <li>Load the JavaScript code into an MLE Module in the database.</li>
+            <li>Create a PL/SQL wrapper to expose it to SQL.</li>
+            <li>Use the world's best JS libraries to validate your database rows instantly without network latency!</li>
+        </ol>
+
+        <!-- Point 3 -->
+        <h3>3. APEX Server-Side: Backend Logic without PL/SQL</h3>
+        <p><span class="problem-text">The Problem:</span> A new developer joins your Oracle APEX team. They know JavaScript perfectly, but they have never seen PL/SQL. In older APEX versions, they couldn't write any backend Page Processes or validations.</p>
+        <p><span class="solution-text">The Fix: APEX Server-Side JavaScript.</span> When creating a Process or Validation in APEX, you can now change the language dropdown from <em>"PL/SQL"</em> to <em>"JavaScript (MLE)"</em>. You have full access to APEX session state and the database.</p>
+
+        <p><span class="icon">✅</span> <strong>The Modern Way (APEX Page Process):</strong></p>
+<pre><code>// 1. Read APEX Page Items using the apex.env object
+let currentSalary = apex.env.P1_SALARY;
+
+// 2. Perform JS business logic
+let bonus = currentSalary * 0.15;
+
+// 3. Set an APEX Page Item
+apex.env.P1_BONUS = bonus;
+
+// 4. Run SQL directly from JavaScript!
+let result = apex.conn.execute(
+    "SELECT first_name FROM employees WHERE emp_id = :id", 
+    { id: apex.env.P1_EMP_ID }
+);
+console.log("Processed bonus for: " + result.rows[0].FIRST_NAME);</code></pre>
+
+        <!-- Point 4 -->
+        <h3>4. APEX Client-Side: Mastering the APEX JS API</h3>
+        <p><span class="problem-text">The Problem:</span> APEX's visual "Dynamic Actions" are great for beginners (e.g., "Show Region when Button Clicked"). But for complex UIs, creating 20 overlapping Dynamic Actions makes the page unmaintainable and slow.</p>
+        <p><span class="solution-text">The Fix: The <code>apex.*</code> JavaScript Namespace.</span> Professional APEX developers use Oracle's highly optimized client-side JavaScript API to manipulate the DOM, show notifications, and make asynchronous AJAX calls without reloading the page.</p>
+
+        <p><span class="icon">✅</span> <strong>The Modern Way (Client-Side AJAX call):</strong></p>
+<pre><code>// Call an APEX "Application Process" asynchronously
+apex.server.process("GET_CUSTOMER_DETAILS", 
+    {
+        // Pass the value of Page Item P2_CUST_ID to the server
+        x01: apex.item("P2_CUST_ID").getValue()
+    }, 
+    {
+        success: function(data) {
+            // Update the UI instantly without refreshing the page
+            apex.item("P2_COMPANY_NAME").setValue(data.company_name);
+            
+            // Show a beautiful native APEX toast notification
+            apex.message.showPageSuccess("Customer data loaded via AJAX!");
+        },
+        dataType: "json"
+    }
+);</code></pre>
+
+        <!-- Summary -->
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 40px 0;">
+        <h3>🎓 Summary for Full-Stack Developers</h3>
+        <p>JavaScript is no longer an "outside" language in the Oracle world. It is a first-class citizen. 
+        <ul>
+            <li>Use <strong>MLE Inline Functions</strong> to write math/logic in JS instead of PL/SQL.</li>
+            <li>Use <strong>MLE Modules</strong> to bring NPM packages into your database.</li>
+            <li>Use <strong>Server-Side APEX JS</strong> to let web developers build backends instantly.</li>
+            <li>Use the <strong>APEX Client JS API</strong> to build snappy, modern, AJAX-driven web apps.</li>
+        </ul>
+        </p>
+
+        <div class="tip-box">
+            <strong>💡 Instructor Challenge:</strong> 
+            Open your APEX Workspace. Create a new Page Process, but set the language to <strong>JavaScript (MLE)</strong>. Use <code>apex.conn.execute()</code> to update a table, and then print a success message to the console. Welcome to the future of Oracle development!
+        </div>
+    </article>
+
+</div>
+
+</body>
+</html>

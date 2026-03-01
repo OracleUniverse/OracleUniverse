@@ -784,20 +784,81 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     id: '2',
     title: 'Getting Started with OCI Autonomous Database',
-    excerpt: 'A comprehensive guide to deploying and managing your first Autonomous Database on Oracle Cloud.',
+    excerpt: 'Cloud Architecture & Deployment: From Zero to Cloud – Learn to deploy, scale, and manage your first Autonomous Database in 60 seconds.',
     content: `
-      ## Why Autonomous?
-      Oracle's Autonomous Database is self-driving, self-securing, and self-repairing. It eliminates the mundane tasks of a DBA.
+      ## ☁️ From Zero to Cloud: Getting Started with OCI Autonomous Database
+      
+      **Introduction**
+      Ten years ago, if a developer or student wanted to learn Oracle Database, they had to clear 10GB of hard drive space, download massive ZIP files, configure memory parameters, and spend hours just trying to get the database installed. By the time it was running, half their energy was gone.
 
-      ### Deployment Steps
-      - Sign up for an OCI Free Tier account.
-      - Navigate to Oracle Database -> Autonomous Database.
-      - Select 'Always Free' for your first instance.
+      Today, that entire process takes **60 seconds** in your web browser.
 
-      The benefits include automatic patching and scaling that responds to your workload in real-time...
+      Welcome to the **Oracle Cloud Infrastructure (OCI) Autonomous Database (ADB)**. Whether you are a student learning SQL, a developer building an APEX application, or a DBA transitioning to cloud architecture, the Autonomous Database is your new home. Let’s break down what it is, why it’s a game-changer, and how to get started.
+
+      ### 1. What exactly does "Autonomous" mean?
+      In the past, DBAs spent 80% of their time "keeping the lights on"—applying security patches, configuring backups, and tuning memory. The Autonomous Database is **"Self-Driving, Self-Securing, and Self-Repairing."**
+
+      - **Self-Driving:** It automatically tunes its own performance, builds its own indexes based on your query habits, and scales its CPU up or down automatically based on traffic.
+      - **Self-Securing:** It encrypts all data by default (at rest and in transit) and automatically applies security patches with zero downtime.
+      - **Self-Repairing:** It runs on Oracle's Exadata cloud infrastructure. If a server rack fails, the database instantly fails over to another node. You won't even notice.
+
+      ### 2. Choose Your Flavor: ATP vs. ADW
+      When you click "Create Autonomous Database" in the Oracle Cloud Console, you will be asked to choose a workload type. It's crucial to understand the difference:
+
+      - **ATP (Autonomous Transaction Processing):** This is for day-to-day applications. If you are building an e-commerce store, a Node.js web app, an APEX application, or a REST API, you want ATP. It is optimized for high-speed, concurrent, single-row inserts and updates.
+      - **ADW (Autonomous Data Warehouse):** This is for analytics, reporting, and Machine Learning. If you are loading 500 million rows of historical sales data and running massive \`GROUP BY\` dashboard queries, you want ADW. It automatically compresses data and processes queries in massive parallel batches.
+      - **JSON & APEX Workloads:** OCI also offers instances strictly locked down just for APEX low-code development or MongoDB-style JSON document stores.
+
+      ### 3. The End of TNSNAMES.ORA (Connecting Securely)
+      **The Problem:** Historically, connecting an application to an Oracle Database required installing the heavy Oracle Client on your machine and configuring a confusing file called \`tnsnames.ora\`.
+
+      **The Cloud Fix:** Autonomous Database uses standard internet security. With recent updates, ADB supports TLS connections without a Wallet, meaning you can connect using a standard connection string (just a username, password, and URL) like you would with PostgreSQL or MySQL!
+
+      **✅ The Modern Way:**
+      1. You can download a **Wallet** (a small ZIP file containing SSL certificates) from the OCI Console.
+      2. You point your modern Python, Node.js, or Java application directly to that ZIP file.
+      3. *Even better:* You can now completely skip the wallet and use standard one-way TLS connection strings!
+
+      ### 4. Database Actions: The Browser is Your IDE
+      One of the best features for learners is **Database Actions** (formerly SQL Developer Web).
+
+      You do not need to download or install any software (like DBeaver or SQL Developer) to your local computer. Autonomous Database includes a fully-featured, built-in web suite. Right from your browser, you can:
+      - Write and run SQL and PL/SQL scripts.
+      - Drag and drop Excel spreadsheets to automatically create and populate tables.
+      - Build REST APIs visually.
+      - Monitor performance and view execution plans.
+      - Manage JSON Duality Views.
+
+      ### 5. Chat with Your Data using "Select AI"
+      Because ADB is deeply integrated with Oracle's cloud infrastructure and large language models (LLMs), it includes a mind-blowing feature for modern developers called **Select AI**.
+
+      Instead of writing complex SQL queries to analyze your data, you can ask the database questions in plain English. The database translates your natural language into a highly optimized SQL query, runs it, and returns the data.
+
+      **✅ The Modern Way (Run this directly in your SQL worksheet):**
+      \`\`\`sql
+      -- 1. Configure an AI profile linking your database to OCI Generative AI or OpenAI
+      EXEC DBMS_CLOUD_AI.CREATE_PROFILE('my_ai', ...);
+
+      -- 2. Simply ask the database a question!
+      SELECT AI Run a report showing the top 5 highest selling products in the state of New York last month;
+      \`\`\`
+      *The database automatically figures out which tables to join and returns the exact rows!*
+
+      ---
+
+      ### 🎓 Step-by-Step: Your First 60-Second Setup
+      Ready to start? Here is your homework assignment:
+
+      1. Go to [oracle.com/cloud/free](https://www.oracle.com/cloud/free/) and sign up for an "Always Free" account. (It requires a credit card to verify you are a human, but it will *never* charge you unless you manually upgrade).
+      2. Log into the OCI Console, click the hamburger menu, and select **Autonomous Database**.
+      3. Click **Create Autonomous Database**.
+      4. Give it a name (e.g., \`LearnDB\`), choose **Transaction Processing (ATP)**, and toggle the switch that says **Always Free**.
+      5. Create a strong Admin password and click Create.
+      6. *Wait 60 seconds.* Once the square turns green, click **Database Actions -> SQL**.
+      7. Write \`SELECT 'Hello Cloud';\` and hit run. You are officially an Oracle Cloud Developer!
     `,
     author: 'Cloud Architect',
-    date: 'Oct 20, 2024',
+    date: 'Mar 01, 2026',
     category: 'Cloud',
     image: '/Autonomous DB.jpg',
     tags: ['Cloud', 'OCI', 'Autonomous']
@@ -805,68 +866,332 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     id: '3',
     title: 'Advanced PL/SQL Patterns for Modern Apps',
-    excerpt: 'Master advanced collections and bulk processing to supercharge your PL/SQL applications.',
+    excerpt: 'Enterprise Backend Development: Master Bulk Processing, Native JSON, and REST Integration to build high-performance Oracle backends.',
     content: `
-      ## Mastering Collections
-      PL/SQL is not just for simple logic. Using Nested Tables and Associative Arrays efficiently can reduce context switching.
-
-      ### Bulk Operations
-      Always use \`FORALL\` and \`BULK COLLECT\` when dealing with large datasets. 
+      ## ⚡ Advanced PL/SQL Patterns for Modern Apps
       
+      **Introduction**
+      There is a myth in modern web development that database stored procedures are "dead" and that all business logic should be written in Python, Node.js, or Java. However, pulling millions of rows out of a database, across a network, just to process them in a middle tier is a recipe for slow applications.
+
+      PL/SQL is still the fastest way to process data because the logic runs *exactly where the data lives*. With Oracle 23ai and 26ai, PL/SQL has evolved. It natively speaks JSON, integrates with REST APIs, and even runs JavaScript. Here are the advanced PL/SQL patterns you need to build fast, modern backends.
+
+      ### 1. Stop Looping Row-by-Row: BULK COLLECT & FORALL
+      **The Performance Killer:** The most common mistake junior developers make in PL/SQL is writing a \`FOR\` loop to update or insert records one at a time. This causes a "Context Switch" between the PL/SQL engine and the SQL engine for every single row. If you process 10,000 rows, that's 10,000 context switches.
+
+      **The Modern Fix: Bulk Processing.** Use \`BULK COLLECT\` to read data into memory arrays all at once, and \`FORALL\` to write the data back to the database in one massive batch operation.
+      
+      **🚫 The Old Way (Slow row-by-row processing):**
       \`\`\`sql
-      FORALL i IN 1..l_data.COUNT
-        INSERT INTO target_table VALUES l_data(i);
+      FOR r IN (SELECT emp_id, salary FROM employees) LOOP
+          UPDATE employees SET salary = r.salary * 1.1 WHERE emp_id = r.emp_id;
+      END LOOP;
       \`\`\`
 
-      This approach minimizes the performance hit of switching between the SQL and PL/SQL engines...
+      **✅ The Modern Way (Lightning Fast Bulk Processing):**
+      \`\`\`sql
+      DECLARE
+          TYPE t_emp_ids IS TABLE OF employees.emp_id%TYPE;
+          v_emp_ids t_emp_ids;
+      BEGIN
+          -- Read all IDs into memory instantly
+          SELECT emp_id BULK COLLECT INTO v_emp_ids FROM employees;
+          
+          -- Update all rows in one single SQL engine call
+          FORALL i IN 1..v_emp_ids.COUNT
+              UPDATE employees SET salary = salary * 1.1 WHERE emp_id = v_emp_ids(i);
+      END;
+      \`\`\`
+
+      ### 2. Native JSON Object Processing
+      **The Problem:** Modern frontends (React, Angular) communicate via JSON REST APIs. Historically, developers tried to build JSON responses in PL/SQL by concatenating strings (e.g., \`'{"name": "' || v_name || '"}'\`), which resulted in formatting errors and SQL injection vulnerabilities.
+
+      **The Fix: PL/SQL Native JSON Types.** Oracle provides built-in object types like \`JSON_OBJECT_T\` and \`JSON_ARRAY_T\` that allow you to interact with JSON in PL/SQL exactly like you would in JavaScript.
+      
+      **✅ The Modern Way:**
+      \`\`\`sql
+      DECLARE
+          v_json   JSON_OBJECT_T := JSON_OBJECT_T();
+          v_array  JSON_ARRAY_T  := JSON_ARRAY_T();
+      BEGIN
+          -- Dynamically build a secure JSON document
+          v_json.put('status', 'success');
+          v_json.put('user_id', 101);
+          
+          v_array.append('Admin');
+          v_array.append('Developer');
+          v_json.put('roles', v_array);
+          
+          -- Output: {"status":"success","user_id":101,"roles":["Admin","Developer"]}
+          DBMS_OUTPUT.PUT_LINE(v_json.to_string);
+      END;
+      \`\`\`
+
+      ### 3. Zero-Downtime Deployments with EBR
+      **The Problem:** In modern CI/CD (Continuous Integration/Continuous Deployment), releasing new application features requires updating PL/SQL packages. But if you try to \`CREATE OR REPLACE PACKAGE\` while thousands of users are logged in, their sessions will crash with "package state discarded" errors. Apps had to schedule weekend downtime just to deploy code.
+
+      **The Fix: Edition-Based Redefinition (EBR).** EBR allows you to have two versions of your PL/SQL code living in the database *at the exact same time*. 
+
+      Version 1 (The old code) runs for existing users. Meanwhile, your CI/CD pipeline deploys Version 2 (The new code) into a hidden "Edition" in the background. Once Version 2 is fully compiled and tested, the DBA simply flips a switch, and all new users are routed to Version 2. **Zero downtime, zero weekend deployments.**
+
+      ### 4. Mixing PL/SQL with JavaScript (MLE)
+      **The Problem:** PL/SQL is amazing for data manipulation, but it is terrible at tasks like complex regex string parsing, cryptography, or formatting specific API payloads. 
+
+      **The Fix: Multilingual Engine (MLE).** Instead of writing a 500-line PL/SQL workaround, you can invoke JavaScript modules directly from inside your PL/SQL blocks using the \`DBMS_MLE\` package or native MLE callouts.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      -- Define an MLE JavaScript function
+      CREATE OR REPLACE MLE MODULE email_validator LANGUAGE JAVASCRIPT AS
+      export function isValidEmail(email) {
+          const regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+          return regex.test(email);
+      }
+      /
+
+      -- Use it directly in PL/SQL!
+      DECLARE
+          v_is_valid BOOLEAN;
+      BEGIN
+          -- Calling the JavaScript module directly
+          v_is_valid := email_validator.isValidEmail('test@oracle.com');
+          
+          IF v_is_valid THEN
+              DBMS_OUTPUT.PUT_LINE('Valid Email!');
+          END IF;
+      END;
+      \`\`\`
+
+      ### 5. Auto-REST: Turn Packages into APIs Instantly
+      **The Problem:** You wrote a brilliant PL/SQL package that calculates employee bonuses. Now, the React Native mobile app developer says, *"Great, can you give me a REST API endpoint so I can call it?"* In the past, you had to spin up a Node.js or Java Spring Boot server just to wrap your PL/SQL code in a REST API.
+
+      **The Fix: Oracle REST Data Services (ORDS).** You can expose any PL/SQL procedure as a secure web API endpoint with a single command.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      -- This single command turns your PL/SQL package into a REST API!
+      BEGIN
+          ORDS.ENABLE_OBJECT(
+              p_enabled      => TRUE,
+              p_schema       => 'HR',
+              p_object       => 'PAYROLL_PKG',
+              p_object_type  => 'PACKAGE',
+              p_object_alias => 'payroll'
+          );
+      END;
+      -- Now the frontend dev can just POST to: https://your-db.oraclecloud.com/ords/hr/payroll/calculate_bonus
+      \`\`\`
+
+      ---
+      ### 🎓 Summary for Enterprise Developers
+      Modern PL/SQL is no longer just about writing database triggers. By mastering **Bulk Processing, native JSON integration, MLE (JavaScript), and ORDS**, you transform PL/SQL from a legacy data tool into a high-performance backend application server.
+
+      > **💡 Instructor Challenge:** Take an old PL/SQL procedure you have that loops through rows and concatenates a string. Rewrite it using \`BULK COLLECT\` and the \`JSON_ARRAY_T\` object. Compare the execution times. You will never go back to string concatenation!
     `,
-    author: 'Dev Master',
-    date: 'Nov 2, 2024',
+    author: 'PL/SQL Architect',
+    date: 'Mar 01, 2026',
     category: 'PL/SQL',
-    image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=800&auto=format&fit=crop',
-    tags: ['PL/SQL', 'Development', 'Performance']
+    image: '/plsql_patterns.png',
+    tags: ['PL/SQL', 'Development', 'Performance', 'JSON', 'MLE']
   },
   {
     id: '4',
-    title: 'Java Microservices with Micronaut and GraalVM',
-    excerpt: 'Learn how to build lightning-fast Java microservices optimized for the Oracle Cloud ecosystem.',
+    title: '💛 JavaScript Everywhere: Oracle APEX & DB 23ai/26ai',
+    excerpt: 'Full-Stack Engineering: Master the Multilingual Engine (MLE) and use JavaScript natively inside Oracle Database and APEX backend processes.',
     content: `
-      ## Java Excellence on OCI
-      The combination of Micronaut and GraalVM Native Image allows Java applications to start in milliseconds with minimal memory overhead.
+      ## 💛 JavaScript Everywhere: Oracle APEX & DB 23ai/26ai
 
-      ### Key Advantages
-      - **Native Compilation**: Convert bytecode to native machine code.
-      - **OCI SDK Integration**: Built-in support for Oracle Cloud services.
-      - **Serverless Readiness**: Perfect for OCI Functions.
+      **Introduction**
+      For decades, the line was clearly drawn: JavaScript was for the frontend (the browser), and PL/SQL was for the backend (the database). If you wanted to process 1 million rows of data using a specialized JavaScript library, you had to extract that data across the network to a Node.js server, process it, and send it back. It was slow and inefficient.
 
-      By leveraging GraalVM, we can achieve performance metrics previously reserved for C++ applications...
+      Today, that boundary has vanished. With the **Multilingual Engine (MLE)** powered by GraalVM inside Oracle Database 23ai and 26ai, the V8 JavaScript engine now runs natively *inside the database kernel*. Furthermore, Oracle APEX has deeply integrated JavaScript into both its front and back ends.
+
+      Whether you are a React developer learning Oracle or an old-school DBA adapting to the modern web, here is how you use JavaScript in the Oracle ecosystem.
+
+      ### 1. Database Server-Side: Inline JavaScript Functions
+      **The Problem:** You need to write a complex string-parsing algorithm or a mathematical calculation. Doing this in PL/SQL can be verbose, but doing it in JavaScript is incredibly easy.
+
+      **The Fix: MLE Inline Functions.** In Oracle 23ai+, you can create standard database functions but write the logic entirely in JavaScript. You can even call these JavaScript functions directly in your standard SQL \`SELECT\` statements.
+
+      **✅ The Modern Way:**
+      \`\`\`sql
+      CREATE OR REPLACE FUNCTION calc_discount(price NUMBER, discount NUMBER) 
+      RETURN NUMBER 
+      AS MLE LANGUAGE JAVASCRIPT
+      q'[
+          // Pure JavaScript running inside the database!
+          if (price < 0) return 0;
+          return price - (price * (discount / 100));
+      ]';
+      /
+
+      -- Call the JavaScript function from standard SQL
+      SELECT product_name, calc_discount(price, 20) AS sale_price 
+      FROM products;
+      \`\`\`
+
+      ### 2. Database Server-Side: Importing NPM Packages
+      **The Problem:** You need to validate complex data (like checking if an email is valid, or parsing a complex URL). Why write 500 lines of custom PL/SQL when the open-source community already built the perfect NPM package for it?
+
+      **The Fix: MLE Modules.** You can load popular open-source JavaScript libraries (like \`validator.js\` or \`marked.js\`) directly into the Oracle Database as an "MLE Module" and use them to process your relational tables.
+
+      **✅ The Modern Way:**
+      1. Load the JavaScript code into an MLE Module in the database.
+      2. Create a PL/SQL wrapper to expose it to SQL.
+      3. Use the world's best JS libraries to validate your database rows instantly without network latency!
+
+      ### 3. APEX Server-Side: Backend Logic without PL/SQL
+      **The Problem:** A new developer joins your Oracle APEX team. They know JavaScript perfectly, but they have never seen PL/SQL. In older APEX versions, they couldn't write any backend Page Processes or validations.
+
+      **The Fix: APEX Server-Side JavaScript.** When creating a Process or Validation in APEX, you can now change the language dropdown from *"PL/SQL"* to *"JavaScript (MLE)"*. You have full access to APEX session state and the database.
+
+      **✅ The Modern Way (APEX Page Process):**
+      \`\`\`javascript
+      // 1. Read APEX Page Items using the apex.env object
+      let currentSalary = apex.env.P1_SALARY;
+
+      // 2. Perform JS business logic
+      let bonus = currentSalary * 0.15;
+
+      // 3. Set an APEX Page Item
+      apex.env.P1_BONUS = bonus;
+
+      // 4. Run SQL directly from JavaScript!
+      let result = apex.conn.execute(
+          "SELECT first_name FROM employees WHERE emp_id = :id", 
+          { id: apex.env.P1_EMP_ID }
+      );
+      console.log("Processed bonus for: " + result.rows[0].FIRST_NAME);
+      \`\`\`
+
+      ### 4. APEX Client-Side: Mastering the APEX JS API
+      **The Problem:** APEX's visual "Dynamic Actions" are great for beginners (e.g., "Show Region when Button Clicked"). But for complex UIs, creating 20 overlapping Dynamic Actions makes the page unmaintainable and slow.
+
+      **The Fix: The \`apex.*\` JavaScript Namespace.** Professional APEX developers use Oracle's highly optimized client-side JavaScript API to manipulate the DOM, show notifications, and make asynchronous AJAX calls without reloading the page.
+
+      **✅ The Modern Way (Client-Side AJAX call):**
+      \`\`\`javascript
+      // Call an APEX "Application Process" asynchronously
+      apex.server.process("GET_CUSTOMER_DETAILS", 
+          {
+              // Pass the value of Page Item P2_CUST_ID to the server
+              x01: apex.item("P2_CUST_ID").getValue()
+          }, 
+          {
+              success: function(data) {
+                  // Update the UI instantly without refreshing the page
+                  apex.item("P2_COMPANY_NAME").setValue(data.company_name);
+                  
+                  // Show a beautiful native APEX toast notification
+                  apex.message.showPageSuccess("Customer data loaded via AJAX!");
+              },
+              dataType: "json"
+          }
+      );
+      \`\`\`
+
+      ---
+      ### 🎓 Summary for Full-Stack Developers
+      JavaScript is no longer an "outside" language in the Oracle world. It is a first-class citizen. 
+      - Use **MLE Inline Functions** to write math/logic in JS instead of PL/SQL.
+      - Use **MLE Modules** to bring NPM packages into your database.
+      - Use **Server-Side APEX JS** to let web developers build backends instantly.
+      - Use the **APEX Client JS API** to build snappy, modern, AJAX-driven web apps.
+
+      > **💡 Instructor Challenge:** Open your APEX Workspace. Create a new Page Process, but set the language to **JavaScript (MLE)**. Use \`apex.conn.execute()\` to update a table, and then print a success message to the console. Welcome to the future of Oracle development!
     `,
-    author: 'Java Specialist',
-    date: 'Nov 8, 2024',
-    category: 'Java',
-    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop',
-    tags: ['Java', 'GraalVM', 'Micronaut']
+    author: 'Full-Stack Developer',
+    date: 'Mar 01, 2026',
+    category: 'Javascript',
+    image: '/javascript_everywhere.png',
+    tags: ['JavaScript', 'MLE', 'APEX', 'Database', '23ai']
   },
   {
     id: '5',
-    title: 'Securing Your Database with OCI Vault',
-    excerpt: 'Best practices for managing encryption keys and secrets using Oracle Cloud Vault.',
+    title: '🔒 Stop Hardcoding Passwords: Securing Apps with OCI Vault',
+    excerpt: 'Cloud Security: Never store passwords in plain text. Master OCI Vault for centralized secrets management, auto-rotation, and secure database linking.',
     content: `
-      ## Security First
-      OCI Vault provides a managed service for storing master encryption keys and database credentials securely.
+      ## 🔒 Stop Hardcoding Passwords: Securing Apps with OCI Vault
+      
+      **Introduction**
+      One of the biggest causes of massive corporate data breaches isn't elite hackers breaking through firewalls. It is developers accidentally uploading a piece of code to GitHub that contains a hardcoded database password or an AWS/Stripe API key. Once that code is pushed, bots scrape the key in milliseconds, and the company is compromised.
 
-      ### Implementation Steps
-      1. Create a Vault and Master Encryption Key (MEK).
-      2. Integrate with Transparent Data Encryption (TDE).
-      3. Rotate secrets automatically with OCI Functions.
+      In modern cloud architecture, your database and your application code should **never** store passwords in plain text. Instead, we use a centralized, highly secure lockbox. In the Oracle ecosystem, this is called **Oracle Cloud Infrastructure (OCI) Vault**.
 
-      Securing the database at the storage level is no longer optional in the modern security landscape...
+      ### 1. The Problem: Hardcoded Secrets
+      **The Performance & Security Killer:** Let's say your Oracle Database needs to call the Stripe REST API to process a user's credit card. To authenticate, Stripe requires a secret API token. Historically, developers would just paste this token directly into their PL/SQL package or APEX application. If anyone gains read-access to the database source code, they instantly steal the financial token.
+
+      **The Fix: Centralized Secrets Management.** OCI Vault physically separates your secrets from your code. You store the API key in the Vault, and your code only asks for it exactly when it needs it.
+      
+      **🚫 The Old Way (Massive Security Risk):**
+      \`\`\`sql
+      CREATE OR REPLACE PROCEDURE charge_credit_card (p_amount NUMBER) IS
+          v_stripe_api_key VARCHAR2(100) := 'sk_live_51H...SecretTokenHere'; -- NEVER DO THIS!
+      BEGIN
+          -- Code to call external REST API using the hardcoded token
+      END;
+      \`\`\`
+
+      ### 2. What exactly is OCI Vault?
+      OCI Vault provides two distinct services to keep your architecture secure:
+      - **Keys (KMS):** Cryptographic Master Keys used to encrypt the actual data files sitting on your hard drives (Transparent Data Encryption). 
+      - **Secrets:** Passwords, SSH keys, authentication tokens, and API keys. The Vault encrypts these secrets, tracks exactly who views them, and allows you to auto-rotate them every 30 days without changing your application code.
+
+      ### 3. Linking Vault to Autonomous Database
+      **The Problem:** If the secret is stored in OCI Vault, how does the database safely get it without needing another password to log into the Vault?
+
+      **The Fix: Resource Principals & DBMS_CLOUD.** Oracle Autonomous Database runs on OCI. You can grant the database itself an "IAM Policy" (Identity and Access Management) allowing it to read the Vault. Then, you use \`DBMS_CLOUD\` to link the Vault Secret directly to a database credential using its OCID (Oracle Cloud Identifier).
+      
+      **✅ The Modern Way:**
+      \`\`\`sql
+      BEGIN
+          -- The database securely points to the Vault Secret. 
+          -- The actual password text is NEVER stored in the database!
+          DBMS_CLOUD.CREATE_CREDENTIAL(
+              credential_name => 'STRIPE_API_CRED',
+              secret_ocid     => 'ocid1.vaultsecret.oc1.iad.xxxxx...'
+          );
+      END;
+      /
+
+      -- Now, use the safe 'STRIPE_API_CRED' name when calling web services
+      BEGIN
+          DBMS_CLOUD.SEND_REQUEST(
+              uri             => 'https://api.stripe.com/v1/charges',
+              credential_name => 'STRIPE_API_CRED',
+              method          => 'POST'
+          );
+      END;
+      \`\`\`
+
+      ### 4. OCI Vault Integration in Oracle APEX
+      **The Problem:** APEX developers constantly build applications on top of external REST APIs (like GitHub, Salesforce, or Oracle SaaS). They need a way to pass authorization tokens securely without exposing them to end-users in the browser.
+
+      **The Fix: APEX Web Credentials + OCI Vault.** Oracle APEX has a built-in feature called **Web Credentials**. In modern APEX versions, when you create a new Web Credential, you don't even type the password into APEX. You just select "OCI Vault" from a dropdown menu, paste the Secret OCID, and APEX handles the secure injection at runtime!
+
+      1. Go to **Workspace Utilities > Web Credentials**
+      2. Set Credential Type to **OCI Vault Secret**
+      3. Whenever your APEX app makes a REST call, the server silently fetches the token from the Vault and injects it into the HTTP header. The token never touches the frontend JavaScript.
+
+      ### 5. Secret Rotation (The DevOps Dream)
+      Security best practices dictate that API keys and passwords should be changed (rotated) every 60 to 90 days. If you hardcoded your passwords, changing them means finding every PL/SQL script, APEX app, and Node.js server that uses the password, updating the code, and redeploying the whole system (causing downtime).
+
+      With OCI Vault, you simply log into the Cloud Console and update the Secret. Because your database and APEX apps are only pointing to the *OCID pointer*, they automatically start using the new password on their next request. **Zero code changes. Zero downtime.**
+
+      ---
+      ### 🎓 Summary for Developers & DBAs
+      Security is no longer just the DBA's job; it is the developer's responsibility to write secure code. 
+      1. Never hardcode strings like \`v_password := 'secret123'\`.
+      2. Store all API tokens, SSH keys, and passwords in **OCI Vault**.
+      3. Use \`DBMS_CLOUD.CREATE_CREDENTIAL\` to reference Vault secrets in your SQL code safely.
+      4. Use **APEX Web Credentials** to securely consume REST APIs in low-code apps.
+
+      > **💡 Instructor Challenge:** Log into your OCI Free Tier account. Search for "Vault" in the top search bar. Create a new Vault, generate a Master Encryption Key, and then create a Secret named \`MY_DB_PASSWORD\`. Try retrieving its OCID and linking it to your Autonomous Database using the \`DBMS_CLOUD\` package!
     `,
-    author: 'Security Officer',
-    date: 'Nov 12, 2024',
+    author: 'Security Architect',
+    date: 'Mar 01, 2026',
     category: 'Security',
-    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop',
-    tags: ['Security', 'Encryption', 'OCI']
+    image: '/oci_vault.png',
+    tags: ['Security', 'OCI', 'Vault', 'Secrets']
   },
   {
     id: '6',
@@ -933,7 +1258,7 @@ export const BLOG_POSTS: BlogPost[] = [
   }
 ];
 
-export const CATEGORIES = ['All', 'APEX', 'Database', 'Cloud', 'SQL', 'PL/SQL', 'Java', 'Security'];
+export const CATEGORIES = ['All', 'APEX', 'Database', 'Cloud', 'SQL', 'PL/SQL', 'Javascript', 'Security'];
 
 export const CATEGORY_ICONS: Record<string, string> = {
   'All': 'fa-globe',
@@ -942,6 +1267,6 @@ export const CATEGORY_ICONS: Record<string, string> = {
   'Cloud': 'fa-cloud',
   'SQL': 'fa-code',
   'PL/SQL': 'fa-terminal',
-  'Java': 'fa-mug-hot',
+  'Javascript': 'fa-brands fa-js',
   'Security': 'fa-shield-halved'
 };

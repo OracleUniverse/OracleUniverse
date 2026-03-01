@@ -10,14 +10,30 @@ interface PostDetailProps {
 }
 
 const formatText = (text: string) => {
-  // Handle bold (**text**)
-  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g);
+  // Handle bold (**text**), code (`text`), and links ([text](url))
+  const parts = text.split(/(\*\*.*?\*\*|`.*?`|\[.*?\]\(.*?\))/g);
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return <strong key={index} className="font-black text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
     }
     if (part.startsWith('`') && part.endsWith('`')) {
       return <code key={index} className="bg-slate-100 dark:bg-slate-800 text-oracle-red px-1.5 py-0.5 rounded text-sm font-mono font-bold border border-slate-200 dark:border-slate-700">{part.slice(1, -1)}</code>;
+    }
+    if (part.startsWith('[') && part.includes('](') && part.endsWith(')')) {
+      const match = part.match(/\[(.*?)\]\((.*?)\)/);
+      if (match) {
+        return (
+          <a
+            key={index}
+            href={match[2]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-oracle-red hover:text-red-700 font-bold underline decoration-oracle-red/30 underline-offset-4 transition-colors"
+          >
+            {match[1]}
+          </a>
+        );
+      }
     }
     return part;
   });

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Securing Your Database with OCI Vault</title>
+    <style>
+        :root {
+            --oracle-red: #c74634;
+            --code-bg: #2d2d2d;
+            --code-color: #f8f8f2;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            color: var(--oracle-red);
+            font-size: 2.5em;
+        }
+        header p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        article {
+            background: #fff;
+            padding: 40px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        article h1 {
+            color: var(--oracle-red);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 2em;
+        }
+        article h3 {
+            color: #2c3e50;
+            margin-top: 35px;
+            border-left: 4px solid var(--oracle-red);
+            padding-left: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul, ol {
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95em;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        code {
+            background-color: #eee;
+            color: #d63384;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        .icon {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+        .tip-box {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 0 5px 5px 0;
+        }
+        .problem-text {
+            color: #d35400;
+            font-weight: bold;
+        }
+        .solution-text {
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>The Modern Oracle Developer</h1>
+        <p>Cloud Security & Best Practices</p>
+    </header>
+
+    <article>
+        <h1>🔒 Stop Hardcoding Passwords: Securing Apps with OCI Vault</h1>
+        
+        <p><strong>Introduction</strong><br>
+        One of the biggest causes of massive corporate data breaches isn't elite hackers breaking through firewalls. It is developers accidentally uploading a piece of code to GitHub that contains a hardcoded database password or an AWS/Stripe API key. Once that code is pushed, bots scrape the key in milliseconds, and the company is compromised.</p>
+        
+        <p>In modern cloud architecture, your database and your application code should <strong>never</strong> store passwords in plain text. Instead, we use a centralized, highly secure lockbox. In the Oracle ecosystem, this is called <strong>Oracle Cloud Infrastructure (OCI) Vault</strong>.</p>
+
+        <!-- Point 1 -->
+        <h3>1. The Problem: Hardcoded Secrets</h3>
+        <p><span class="problem-text">The Performance & Security Killer:</span> Let's say your Oracle Database needs to call the Stripe REST API to process a user's credit card. To authenticate, Stripe requires a secret API token. Historically, developers would just paste this token directly into their PL/SQL package or APEX application. If anyone gains read-access to the database source code, they instantly steal the financial token.</p>
+        <p><span class="solution-text">The Fix: Centralized Secrets Management.</span> OCI Vault physically separates your secrets from your code. You store the API key in the Vault, and your code only asks for it exactly when it needs it.</p>
+        
+        <p><span class="icon">🚫</span> <strong>The Old Way (Massive Security Risk):</strong></p>
+<pre><code>CREATE OR REPLACE PROCEDURE charge_credit_card (p_amount NUMBER) IS
+    v_stripe_api_key VARCHAR2(100) := 'sk_live_51H...SecretTokenHere'; -- NEVER DO THIS!
+BEGIN
+    -- Code to call external REST API using the hardcoded token
+END;</code></pre>
+
+        <!-- Point 2 -->
+        <h3>2. What exactly is OCI Vault?</h3>
+        <p>OCI Vault provides two distinct services to keep your architecture secure:</p>
+        <ul>
+            <li><strong>Keys (KMS):</strong> Cryptographic Master Keys used to encrypt the actual data files sitting on your hard drives (Transparent Data Encryption). </li>
+            <li><strong>Secrets:</strong> Passwords, SSH keys, authentication tokens, and API keys. The Vault encrypts these secrets, tracks exactly who views them, and allows you to auto-rotate them every 30 days without changing your application code.</li>
+        </ul>
+
+        <!-- Point 3 -->
+        <h3>3. Linking Vault to Autonomous Database</h3>
+        <p><span class="problem-text">The Problem:</span> If the secret is stored in OCI Vault, how does the database safely get it without needing another password to log into the Vault?</p>
+        <p><span class="solution-text">The Fix: Resource Principals & DBMS_CLOUD.</span> Oracle Autonomous Database runs on OCI. You can grant the database itself an "IAM Policy" (Identity and Access Management) allowing it to read the Vault. Then, you use <code>DBMS_CLOUD</code> to link the Vault Secret directly to a database credential using its OCID (Oracle Cloud Identifier).</p>
+        
+        <p><span class="icon">✅</span> <strong>The Modern Way:</strong></p>
+<pre><code>BEGIN
+    -- The database securely points to the Vault Secret. 
+    -- The actual password text is NEVER stored in the database!
+    DBMS_CLOUD.CREATE_CREDENTIAL(
+        credential_name => 'STRIPE_API_CRED',
+        secret_ocid     => 'ocid1.vaultsecret.oc1.iad.xxxxx...'
+    );
+END;
+/
+
+-- Now, use the safe 'STRIPE_API_CRED' name when calling web services
+BEGIN
+    DBMS_CLOUD.SEND_REQUEST(
+        uri             => 'https://api.stripe.com/v1/charges',
+        credential_name => 'STRIPE_API_CRED',
+        method          => 'POST'
+    );
+END;</code></pre>
+
+        <!-- Point 4 -->
+        <h3>4. OCI Vault Integration in Oracle APEX</h3>
+        <p><span class="problem-text">The Problem:</span> APEX developers constantly build applications on top of external REST APIs (like GitHub, Salesforce, or Oracle SaaS). They need a way to pass authorization tokens securely without exposing them to end-users in the browser.</p>
+        <p><span class="solution-text">The Fix: APEX Web Credentials + OCI Vault.</span> Oracle APEX has a built-in feature called <strong>Web Credentials</strong>. In modern APEX versions, when you create a new Web Credential, you don't even type the password into APEX. You just select "OCI Vault" from a dropdown menu, paste the Secret OCID, and APEX handles the secure injection at runtime!</p>
+        <ul>
+            <li>Go to <strong>Workspace Utilities &gt; Web Credentials</strong></li>
+            <li>Set Credential Type to <strong>OCI Vault Secret</strong></li>
+            <li>Whenever your APEX app makes a REST call, the server silently fetches the token from the Vault and injects it into the HTTP header. The token never touches the frontend JavaScript.</li>
+        </ul>
+
+        <!-- Point 5 -->
+        <h3>5. Secret Rotation (The DevOps Dream)</h3>
+        <p>Security best practices dictate that API keys and passwords should be changed (rotated) every 60 to 90 days. If you hardcoded your passwords, changing them means finding every PL/SQL script, APEX app, and Node.js server that uses the password, updating the code, and redeploying the whole system (causing downtime).</p>
+        <p>With OCI Vault, you simply log into the Cloud Console and update the Secret. Because your database and APEX apps are only pointing to the <em>OCID pointer</em>, they automatically start using the new password on their next request. <strong>Zero code changes. Zero downtime.</strong></p>
+
+        <!-- Summary -->
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 40px 0;">
+        <h3>🎓 Summary for Developers & DBAs</h3>
+        <p>Security is no longer just the DBA's job; it is the developer's responsibility to write secure code. 
+        <ol>
+            <li>Never hardcode strings like <code>v_password := 'secret123'</code>.</li>
+            <li>Store all API tokens, SSH keys, and passwords in <strong>OCI Vault</strong>.</li>
+            <li>Use <code>DBMS_CLOUD.CREATE_CREDENTIAL</code> to reference Vault secrets in your SQL code safely.</li>
+            <li>Use <strong>APEX Web Credentials</strong> to securely consume REST APIs in low-code apps.</li>
+        </ol>
+        </p>
+
+        <div class="tip-box">
+            <strong>💡 Instructor Challenge:</strong> 
+            Log into your OCI Free Tier account. Search for "Vault" in the top search bar. Create a new Vault, generate a Master Encryption Key, and then create a Secret named <code>MY_DB_PASSWORD</code>. Try retrieving its OCID and linking it to your Autonomous Database using the <code>DBMS_CLOUD</code> package!
+        </div>
+    </article>
+
+</div>
+
+</body>
+</html>

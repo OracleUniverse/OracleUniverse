@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced PL/SQL Patterns for Modern Apps</title>
+    <style>
+        :root {
+            --oracle-red: #c74634;
+            --code-bg: #2d2d2d;
+            --code-color: #f8f8f2;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            color: var(--oracle-red);
+            font-size: 2.5em;
+        }
+        header p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        article {
+            background: #fff;
+            padding: 40px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        article h1 {
+            color: var(--oracle-red);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 2em;
+        }
+        article h3 {
+            color: #2c3e50;
+            margin-top: 35px;
+            border-left: 4px solid var(--oracle-red);
+            padding-left: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul, ol {
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95em;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        code {
+            background-color: #eee;
+            color: #d63384;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        .icon {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+        .tip-box {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 0 5px 5px 0;
+        }
+        .problem-text {
+            color: #d35400;
+            font-weight: bold;
+        }
+        .solution-text {
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>The Modern Oracle Developer</h1>
+        <p>Enterprise Backend Development</p>
+    </header>
+
+    <article>
+        <h1>⚡ Advanced PL/SQL Patterns for Modern Apps</h1>
+        
+        <p><strong>Introduction</strong><br>
+        There is a myth in modern web development that database stored procedures are "dead" and that all business logic should be written in Python, Node.js, or Java. However, pulling millions of rows out of a database, across a network, just to process them in a middle tier is a recipe for slow applications.</p>
+        
+        <p>PL/SQL is still the fastest way to process data because the logic runs <em>exactly where the data lives</em>. With Oracle 23ai and 26ai, PL/SQL has evolved. It natively speaks JSON, integrates with REST APIs, and even runs JavaScript. Here are the advanced PL/SQL patterns you need to build fast, modern backends.</p>
+
+        <!-- Point 1 -->
+        <h3>1. Stop Looping Row-by-Row: BULK COLLECT & FORALL</h3>
+        <p><span class="problem-text">The Performance Killer:</span> The most common mistake junior developers make in PL/SQL is writing a <code>FOR</code> loop to update or insert records one at a time. This causes a "Context Switch" between the PL/SQL engine and the SQL engine for every single row. If you process 10,000 rows, that's 10,000 context switches.</p>
+        <p><span class="solution-text">The Modern Fix: Bulk Processing.</span> Use <code>BULK COLLECT</code> to read data into memory arrays all at once, and <code>FORALL</code> to write the data back to the database in one massive batch operation.</p>
+        
+        <p><span class="icon">🚫</span> <strong>The Old Way (Slow row-by-row processing):</strong></p>
+<pre><code>FOR r IN (SELECT emp_id, salary FROM employees) LOOP
+    UPDATE employees SET salary = r.salary * 1.1 WHERE emp_id = r.emp_id;
+END LOOP;</code></pre>
+
+        <p><span class="icon">✅</span> <strong>The Modern Way (Lightning Fast Bulk Processing):</strong></p>
+<pre><code>DECLARE
+    TYPE t_emp_ids IS TABLE OF employees.emp_id%TYPE;
+    v_emp_ids t_emp_ids;
+BEGIN
+    -- Read all IDs into memory instantly
+    SELECT emp_id BULK COLLECT INTO v_emp_ids FROM employees;
+    
+    -- Update all rows in one single SQL engine call
+    FORALL i IN 1..v_emp_ids.COUNT
+        UPDATE employees SET salary = salary * 1.1 WHERE emp_id = v_emp_ids(i);
+END;</code></pre>
+
+        <!-- Point 2 -->
+        <h3>2. Native JSON Object Processing</h3>
+        <p><span class="problem-text">The Problem:</span> Modern frontends (React, Angular) communicate via JSON REST APIs. Historically, developers tried to build JSON responses in PL/SQL by concatenating strings (e.g., <code>'{"name": "' || v_name || '"}'</code>), which resulted in formatting errors and SQL injection vulnerabilities.</p>
+        <p><span class="solution-text">The Fix: PL/SQL Native JSON Types.</span> Oracle provides built-in object types like <code>JSON_OBJECT_T</code> and <code>JSON_ARRAY_T</code> that allow you to interact with JSON in PL/SQL exactly like you would in JavaScript.</p>
+        
+        <p><span class="icon">✅</span> <strong>The Modern Way:</strong></p>
+<pre><code>DECLARE
+    v_json   JSON_OBJECT_T := JSON_OBJECT_T();
+    v_array  JSON_ARRAY_T  := JSON_ARRAY_T();
+BEGIN
+    -- Dynamically build a secure JSON document
+    v_json.put('status', 'success');
+    v_json.put('user_id', 101);
+    
+    v_array.append('Admin');
+    v_array.append('Developer');
+    v_json.put('roles', v_array);
+    
+    -- Output: {"status":"success","user_id":101,"roles":["Admin","Developer"]}
+    DBMS_OUTPUT.PUT_LINE(v_json.to_string);
+END;</code></pre>
+
+        <!-- Point 3 -->
+        <h3>3. Zero-Downtime Deployments with EBR</h3>
+        <p><span class="problem-text">The Problem:</span> In modern CI/CD (Continuous Integration/Continuous Deployment), releasing new application features requires updating PL/SQL packages. But if you try to <code>CREATE OR REPLACE PACKAGE</code> while thousands of users are logged in, their sessions will crash with "package state discarded" errors. Apps had to schedule weekend downtime just to deploy code.</p>
+        <p><span class="solution-text">The Fix: Edition-Based Redefinition (EBR).</span> EBR allows you to have two versions of your PL/SQL code living in the database <em>at the exact same time</em>. 
+        <br><br>
+        Version 1 (The old code) runs for existing users. Meanwhile, your CI/CD pipeline deploys Version 2 (The new code) into a hidden "Edition" in the background. Once Version 2 is fully compiled and tested, the DBA simply flips a switch, and all new users are routed to Version 2. <strong>Zero downtime, zero weekend deployments.</strong></p>
+
+        <!-- Point 4 -->
+        <h3>4. Mixing PL/SQL with JavaScript (MLE)</h3>
+        <p><span class="problem-text">The Problem:</span> PL/SQL is amazing for data manipulation, but it is terrible at tasks like complex regex string parsing, cryptography, or formatting specific API payloads. </p>
+        <p><span class="solution-text">The Fix: Multilingual Engine (MLE).</span> Instead of writing a 500-line PL/SQL workaround, you can invoke JavaScript modules directly from inside your PL/SQL blocks using the <code>DBMS_MLE</code> package or native MLE callouts.</p>
+
+        <p><span class="icon">✅</span> <strong>The Modern Way:</strong></p>
+<pre><code>-- Define an MLE JavaScript function
+CREATE OR REPLACE MLE MODULE email_validator LANGUAGE JAVASCRIPT AS
+export function isValidEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
+/
+
+-- Use it directly in PL/SQL!
+DECLARE
+    v_is_valid BOOLEAN;
+BEGIN
+    -- Calling the JavaScript module directly
+    v_is_valid := email_validator.isValidEmail('test@oracle.com');
+    
+    IF v_is_valid THEN
+        DBMS_OUTPUT.PUT_LINE('Valid Email!');
+    END IF;
+END;</code></pre>
+
+        <!-- Point 5 -->
+        <h3>5. Auto-REST: Turn Packages into APIs Instantly</h3>
+        <p><span class="problem-text">The Problem:</span> You wrote a brilliant PL/SQL package that calculates employee bonuses. Now, the React Native mobile app developer says, <em>"Great, can you give me a REST API endpoint so I can call it?"</em> In the past, you had to spin up a Node.js or Java Spring Boot server just to wrap your PL/SQL code in a REST API.</p>
+        <p><span class="solution-text">The Fix: Oracle REST Data Services (ORDS).</span> You can expose any PL/SQL procedure as a secure web API endpoint with a single command.</p>
+
+        <p><span class="icon">✅</span> <strong>The Modern Way:</strong></p>
+<pre><code>-- This single command turns your PL/SQL package into a REST API!
+BEGIN
+    ORDS.ENABLE_OBJECT(
+        p_enabled      => TRUE,
+        p_schema       => 'HR',
+        p_object       => 'PAYROLL_PKG',
+        p_object_type  => 'PACKAGE',
+        p_object_alias => 'payroll'
+    );
+END;
+-- Now the frontend dev can just POST to: https://your-db.oraclecloud.com/ords/hr/payroll/calculate_bonus</code></pre>
+
+        <!-- Summary -->
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 40px 0;">
+        <h3>🎓 Summary for Enterprise Developers</h3>
+        <p>Modern PL/SQL is no longer just about writing database triggers. By mastering <strong>Bulk Processing, native JSON integration, MLE (JavaScript), and ORDS</strong>, you transform PL/SQL from a legacy data tool into a high-performance backend application server.</p>
+
+        <div class="tip-box">
+            <strong>💡 Instructor Challenge:</strong> 
+            Take an old PL/SQL procedure you have that loops through rows and concatenates a string. Rewrite it using <code>BULK COLLECT</code> and the <code>JSON_ARRAY_T</code> object. Compare the execution times. You will never go back to string concatenation!
+        </div>
+    </article>
+
+</div>
+
+</body>
+</html>
