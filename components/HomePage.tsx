@@ -1,6 +1,8 @@
 import React from 'react';
 import { BlogPost } from '../types';
 import PostList from './PostList';
+import VideoSection from './VideoSection';
+import { YOUTUBE_VIDEOS } from '../constants';
 
 interface HomePageProps {
   posts: BlogPost[];
@@ -51,6 +53,11 @@ const HomePage: React.FC<HomePageProps> = ({
       {/* Unified Posts Archive */}
       <div className="relative z-10 max-w-5xl mx-auto">
         <PostList posts={posts} onPostClick={onPostClick} />
+      </div>
+
+      {/* Video Insights Section */}
+      <div className="relative z-10 max-w-5xl mx-auto">
+        <VideoSection videos={YOUTUBE_VIDEOS} />
       </div>
     </div>
   );

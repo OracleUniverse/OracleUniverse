@@ -16,5 +16,15 @@ export interface ChatMessage {
   text: string;
 }
 
+export interface Video {
+  id: string;
+  title: string;
+  thumbnail: string;
+  youtubeUrl: string;
+  duration: string;
+  views: string;
+  publishedAt: string;
+}
+
 export type ViewState = 'home' | 'post' | 'about';
 export type MobileTab = 'feed' | 'explore' | 'ai' | 'more';

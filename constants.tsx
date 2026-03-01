@@ -1,5 +1,48 @@
 
-import { BlogPost } from './types';
+import { BlogPost, Video } from './types';
+
+// ... (existing ORACLE_NEWS and BLOG_POSTS)
+
+export const YOUTUBE_VIDEOS: Video[] = [
+  {
+    id: 'v1',
+    title: 'Advanced PLSQL Patterns for Modern Apps',
+    thumbnail: 'https://img.youtube.com/vi/GdKc6jA7loQ/maxresdefault.jpg',
+    youtubeUrl: 'https://www.youtube.com/watch?v=GdKc6jA7loQ',
+    duration: '9:10',
+    views: 'New',
+    publishedAt: 'Recent'
+  },
+  {
+    id: 'v2',
+    title: 'Oracle 26ai The Vector Engine',
+    thumbnail: 'https://img.youtube.com/vi/-id52WTsufY/maxresdefault.jpg',
+    youtubeUrl: 'https://www.youtube.com/watch?v=-id52WTsufY',
+    duration: '5:06',
+    views: '2 views',
+    publishedAt: '2 days ago'
+  },
+  {
+    id: 'v3',
+    title: 'Oracle SQL Intro 1 Arabic',
+    thumbnail: 'https://img.youtube.com/vi/gNPZDcq7Vo0/maxresdefault.jpg',
+    youtubeUrl: 'https://www.youtube.com/watch?v=gNPZDcq7Vo0',
+    duration: '5:17',
+    views: '9 views',
+    publishedAt: '7 months ago'
+  },
+  {
+    id: 'v4',
+    title: 'Oracle SQL Intro 1 English',
+    thumbnail: 'https://img.youtube.com/vi/XKAAvdMT4iI/maxresdefault.jpg',
+    youtubeUrl: 'https://www.youtube.com/watch?v=XKAAvdMT4iI',
+    duration: '4:22',
+    views: '3 views',
+    publishedAt: '7 months ago'
+  }
+];
+
+// ...
 
 export interface OracleNews {
   id: string;

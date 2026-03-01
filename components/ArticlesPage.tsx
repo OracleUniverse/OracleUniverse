@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import PostList from './PostList';
 import PostDetail from './PostDetail';
 import { BlogPost } from '../types';
+import VideoSection from './VideoSection';
+import { YOUTUBE_VIDEOS } from '../constants';
 
 interface ArticlesPageProps {
   posts: BlogPost[];
@@ -56,6 +58,10 @@ const ArticlesPage: React.FC<ArticlesPageProps> = ({ posts, activeCategory, onCa
 
       <div className="pt-6">
         <PostList posts={posts} onPostClick={setSelectedPost} />
+      </div>
+
+      <div className="pt-12 border-t border-slate-200 dark:border-slate-800">
+        <VideoSection videos={YOUTUBE_VIDEOS} />
       </div>
     </div>
   );
