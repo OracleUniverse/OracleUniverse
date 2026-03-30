@@ -1,5 +1,5 @@
-import React from 'react';
-import { BlogPost } from '../types';
+import React, { useState, useEffect } from 'react';
+import { BlogPost, Video } from '../types';
 import PostList from './PostList';
 import VideoSection from './VideoSection';
 import { YOUTUBE_VIDEOS } from '../constants';
@@ -19,6 +19,47 @@ const HomePage: React.FC<HomePageProps> = ({
   categories,
   onPostClick
 }) => {
+  const [videos, setVideos] = useState<Video[]>(YOUTUBE_VIDEOS);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const rssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCEfppnCWgxKqm-PHU0dsYcg';
+        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+        const data = await response.json();
+        if (data && data.items && data.items.length > 0) {
+          const dynamicVideos: Video[] = data.items.map((item: any, index: number) => {
+            const dateObj = new Date(item.pubDate);
+            const formattedDate = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            return {
+              id: item.guid || `v_dyn_${index}`,
+              title: item.title,
+              thumbnail: item.thumbnail || '',
+              youtubeUrl: item.link,
+              duration: 'Watch',
+              views: 'New',
+              publishedAt: formattedDate
+            };
+          });
+
+          // Merge fetched videos with existing hardcoded ones, preventing duplicates by comparing the youtubeUrl
+          setVideos(prev => {
+            const merged = [...dynamicVideos];
+            prev.forEach(staticVideo => {
+              if (!merged.some(v => v.youtubeUrl === staticVideo.youtubeUrl)) {
+                merged.push(staticVideo);
+              }
+            });
+            return merged;
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch dynamic youtube videos', err);
+      }
+    };
+    fetchVideos();
+  }, []);
+
   return (
     <div className="animate-fadeIn space-y-8 pb-32 w-full overflow-hidden relative">
       {/* Dynamic Background Glow */}
@@ -57,7 +98,7 @@ const HomePage: React.FC<HomePageProps> = ({
 
       {/* Video Insights Section */}
       <div className="relative z-10 max-w-5xl mx-auto">
-        <VideoSection videos={YOUTUBE_VIDEOS} />
+        <VideoSection videos={videos} />
       </div>
     </div>
   );

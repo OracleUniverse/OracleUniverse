@@ -82,6 +82,144 @@ export const ORACLE_NEWS: OracleNews[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    id: '18',
+    title: 'Chat History: Event Delegation & Native Event Listeners in Oracle APEX',
+    excerpt: 'In APEX, regions like Interactive Grids, Classic Reports, and Cards are constantly refreshing via AJAX. Master Event Delegation to attach listeners to static parents and ensure your code never breaks.',
+    content: `
+      ## 💡 The Core Problem: The "Disappearing" Event Listener
+      Imagine you have a Classic Report of employees, and you add a "Details" button to each row. When the page first loads, you use JavaScript to attach a \`click\` event listener to each one.
+
+      \`\`\`javascript
+      // THE WRONG WAY - DIRECT BINDING
+      // This code runs when the page loads.
+      document.querySelectorAll('.show-details-btn').forEach(button => {
+          button.addEventListener('click', function() {
+              const employeeId = this.dataset.empid; 
+              alert('Showing details for employee: ' + employeeId);
+          });
+      });
+      \`\`\`
+      This code works perfectly... **at first**.
+      Now, the user clicks the "Next >" pagination button on the report. APEX uses AJAX to fetch the next 10 employee records from the database and replaces the report's HTML with the new rows.
+      **The original buttons you attached listeners to are now gone.** They were destroyed and replaced. The new buttons, even though they have the same \`.show-details-btn\` class, were not present on the page when your initial JavaScript code ran. Therefore, **they have no event listeners attached.**
+      When the user clicks a "Details" button on page 2 of the report, **nothing happens.** The listener is gone. This is the classic APEX JavaScript bug that Event Delegation solves.
+
+      ## 🛠️ The Solution: Event Delegation Explained
+      The principle of Event Delegation is simple:
+      > If the elements you want to monitor are being constantly destroyed and recreated, don't attach the listener to them directly. Instead, attach a **single listener** to their stable, non-disappearing parent element.
+
+      When an event (like a \`click\`) happens on an element, it doesn't just stop there. It "bubbles up" through the HTML DOM tree from the target element all the way to the \`<html>\` document.
+      With Event Delegation, we set a "trap" on the stable parent. Our single listener on the parent waits and listening for any click events that bubble up. When it catches one, it checks if the clicked element is the button we care about.
+
+      ## 🚀 Implementing Event Delegation in Oracle APEX: The Right Way
+      Let's build a practical, step-by-step example for a Classic Report showing employees.
+
+      ### Step 1: Prepare the SQL Query
+      \`\`\`sql
+      SELECT
+          empno,
+          ename,
+          job,
+          sal,
+          '<button type="button" class="t-Button t-Button--hot show-emp-details" data-emp-id="' || empno || '">Show Details</button>' AS details_button
+      FROM
+          emp
+      \`\`\`
+      *(Make sure to set the \`details_button\` column's "Type" to \`Plain Text\` and check "Escape special characters: No")*
+
+      ### Step 2: Assign a Static ID to the Region
+      Set the **Static ID** of your report region to something meaningful, like \`employee_report_region\`.
+
+      ### Step 3: Write the JavaScript Code
+      \`\`\`javascript
+      // THE RIGHT WAY - EVENT DELEGATION
+      // 1. Get the stable parent element (the region).
+      const employeeReportRegion = document.getElementById('employee_report_region');
+
+      // 2. Attach ONE single click listener to this parent region.
+      employeeReportRegion.addEventListener('click', function(event) {
+          // 3. Check if the element that was actually clicked (event.target) 
+          // is a details button OR is inside a details button.
+          const detailsButton = event.target.closest('.show-emp-details');
+
+          // 4. If the click was not on our button, we do nothing and exit.
+          if (!detailsButton) {
+              return; 
+          }
+
+          // 5. Safely get the employee ID from its data attribute.
+          const employeeId = detailsButton.dataset.empId;
+
+          // 6. Execute our logic.
+          console.log('Button clicked for employee ID:', employeeId);
+      });
+      \`\`\`
+
+      ### Why This Code is Superior
+      1. **Resilience:** This code will **never break**, regardless of pagination, filtering, or sorting.
+      2. **Performance:** Creates **only one** listener, saving memory.
+      3. **Maintainability:** All the logic is cleanly contained in one block of code.
+
+      ## 🌟 Other APEX Use Cases
+
+      ### Interactive Grid (The Most Important Use Case)
+      Interactive Grids (IGs) are constantly refreshing via AJAX. Event Delegation is the only correct way to attach events.
+      1. Give your IG Region a Static ID: \`emp_ig_region\`
+      2. In your IG's SQL, add the button:
+      \`\`\`sql
+      SELECT 
+          empno, 
+          ename,
+          '<button type="button" class="t-Button t-Button--simple my-audit-btn" data-empno="' || empno || '">Audit</button>' as AUDIT_BTN
+      FROM emp
+      \`\`\`
+      3. Use Event Delegation:
+      \`\`\`javascript
+      document.getElementById('emp_ig_region').addEventListener('click', function(event) {
+          const auditButton = event.target.closest('.my-audit-btn');
+          if (!auditButton) return;
+
+          const empNo = auditButton.dataset.empno;
+          console.log('Auditing employee:', empNo);
+      });
+      \`\`\`
+
+      ### Cards Region with "Fetch on Scroll"
+      \`\`\`javascript
+      document.getElementById('product_cards_region').addEventListener('click', function(event) {
+          const cartButton = event.target.closest('.add-to-cart-btn');
+          if (cartButton) {
+              const productId = cartButton.dataset.productId;
+              console.log('Adding product to cart:', productId);
+          }
+      });
+      \`\`\`
+
+      ### Listening for Changes on Dynamic Form Inputs
+      \`\`\`javascript
+      document.getElementById('invoice_lines_container').addEventListener('input', function(event) {
+          if (event.target.matches('.quantity, .price')) {
+              const row = event.target.closest('.invoice-line-row');
+              const quantity = row.querySelector('.quantity').value;
+              const price = row.querySelector('.price').value;
+              const subtotalField = row.querySelector('.subtotal');
+
+              if (quantity && price) {
+                  subtotalField.value = (parseFloat(quantity) * parseFloat(price)).toFixed(2);
+              } else {
+                  subtotalField.value = '';
+              }
+          }
+      });
+      \`\`\`
+    `,
+    author: 'Oracle Expert',
+    date: 'Mar 30, 2026',
+    category: 'APEX',
+    image: '/Security and Standardization Architecture.jpeg',
+    tags: ['APEX', 'JavaScript', 'Events', 'Development']
+  },
+  {
     id: '17',
     title: '4 SQL Syntax Upgrades You Need to Use Today',
     excerpt: "For years, Oracle developers have had to memorize a specific set of \"Oracle-isms\"—quirky workarounds needed to write standard SQL. With Oracle 23ai and 26ai, those days are over.",
