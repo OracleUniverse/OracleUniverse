@@ -10,6 +10,8 @@ import BottomNav from './components/BottomNav';
 import AboutMeModal from './components/AboutMeModal';
 import { BLOG_POSTS, CATEGORIES } from './constants';
 import { BlogPost, ViewState, MobileTab } from './types';
+import { Analytics } from '@vercel/analytics/react';
+
 
 export type ThemeMode = 'light' | 'dark' | 'midnight';
 
@@ -293,8 +295,9 @@ const App: React.FC = () => {
           </div>
         </div>
       </footer>
+      <Analytics />
     </div>
   );
 };
 
-export default App;
+export default App;
