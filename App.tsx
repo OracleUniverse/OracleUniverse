@@ -11,19 +11,47 @@ import AboutMeModal from './components/AboutMeModal';
 import { BLOG_POSTS, CATEGORIES } from './constants';
 import { BlogPost, ViewState, MobileTab } from './types';
 import { Analytics } from '@vercel/analytics/react';
+import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
 
 
 export type ThemeMode = 'light' | 'dark' | 'midnight';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ViewState>('home');
-  const [activeMobileTab, setActiveMobileTab] = useState<MobileTab>('feed');
-  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Helper to determine view based on location
+  const currentView = useMemo<ViewState>(() => {
+    if (location.pathname === '/about') return 'about';
+    if (location.pathname.startsWith('/post')) return 'post';
+    return 'home';
+  }, [location.pathname]);
+
+  // Helper to determine mobile tab based on location
+  const activeMobileTab = useMemo<MobileTab>(() => {
+    if (location.pathname === '/explore') return 'explore';
+    if (location.pathname === '/ai') return 'ai';
+    if (location.pathname === '/more') return 'more';
+    return 'feed';
+  }, [location.pathname]);
+
+  const { id: postId } = useParams(); // Note: we'll use this in a nested component or via the URL directly
+  
+  // Find selected post from URL if in post view
+  const selectedPost = useMemo(() => {
+    if (currentView === 'post') {
+      const id = location.pathname.split('/').pop();
+      return BLOG_POSTS.find(p => p.id === id) || null;
+    }
+    return null;
+  }, [currentView, location.pathname]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>((localStorage.getItem('oti-theme') as ThemeMode) || 'light');
   const [showBackToTop, setShowBackToTop] = useState(false);
+
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -55,12 +83,14 @@ const App: React.FC = () => {
   };
 
   const handleTabChange = (tab: MobileTab) => {
-    setActiveMobileTab(tab);
-    if (tab !== 'feed') {
-      setCurrentView('home');
+    if (tab === 'feed') {
+      navigate('/');
+    } else {
+      navigate(`/${tab}`);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
 
   const filteredPosts = useMemo(() => {
     return BLOG_POSTS.filter((post) => {
@@ -72,17 +102,15 @@ const App: React.FC = () => {
   }, [searchQuery, activeCategory]);
 
   const handlePostClick = (post: BlogPost) => {
-    setSelectedPost(post);
-    setCurrentView('post');
+    navigate(`/post/${post.id}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleGoHome = () => {
-    setCurrentView('home');
-    setSelectedPost(null);
-    setActiveMobileTab('feed');
+    navigate('/');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -92,88 +120,90 @@ const App: React.FC = () => {
 
   const handleGoToContact = () => {
     setIsAboutModalOpen(false);
-    setCurrentView('about');
-    setSelectedPost(null);
-    setActiveMobileTab('feed');
+    navigate('/about');
     setScrollToContact(true);
     // Reset the state after a delay to allow re-triggering if needed
     setTimeout(() => setScrollToContact(false), 2000);
   };
 
   const navigateTo = (view: ViewState) => {
-    setCurrentView(view);
-    setSelectedPost(null);
-    setActiveMobileTab('feed');
+    if (view === 'home') navigate('/');
+    else if (view === 'about') navigate('/about');
+    else if (view === 'post') {
+      // If navigating to post without ID, just go home
+      navigate('/');
+    }
     setScrollToContact(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const renderContent = () => {
-    if (activeMobileTab !== 'feed') {
-      switch (activeMobileTab) {
-        case 'explore':
-          return (
-            <div className="lg:hidden py-4 space-y-8 max-w-2xl mx-auto">
-              <Sidebar
-                categories={CATEGORIES}
-                activeCategory={activeCategory}
-                onCategoryChange={(cat) => {
-                  setActiveCategory(cat);
-                  setActiveMobileTab('feed');
-                  setCurrentView('home');
-                }}
-              />
-            </div>
-          );
-        case 'ai':
-          return (
-            <div className="lg:hidden py-4 h-[calc(100vh-16rem)] min-h-[500px] max-w-2xl mx-auto">
-              <OracleAssistant />
-            </div>
-          );
-        case 'more':
-          return (
-            <div className="lg:hidden py-6 text-center space-y-8 max-w-xl mx-auto">
-              <div
-                className="relative isolate w-48 h-48 bg-slate-200/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full mx-auto overflow-hidden shadow-xl cursor-pointer p-2 border border-slate-200 dark:border-slate-700"
-                onClick={() => setIsAboutModalOpen(true)}
-              >
-                <div className="absolute inset-[-20%] bg-oracle-red/30 liquid-shape blur-[20px] -z-10 animate-pulse-slow"></div>
-                <img src="/avatar.png" alt="Author" className="w-full h-full object-cover rounded-full" />
-              </div>
-              <div className="grid grid-cols-2 gap-4 px-4">
-                <button onClick={handleGoHome} className="relative isolate overflow-hidden bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white group">
-                  <div className="absolute inset-[-50%] bg-oracle-red/10 liquid-shape blur-[30px] opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
-                  Home
-                </button>
-                <button onClick={() => navigateTo('about')} className="relative isolate overflow-hidden bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white group">
-                  <div className="absolute inset-[-50%] bg-oracle-red/10 liquid-shape blur-[30px] opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
-                  About
-                </button>
-              </div>
-            </div>
-          );
-      }
-    }
 
-    switch (currentView) {
-      case 'post':
-        return selectedPost ? <div className="max-w-4xl mx-auto w-full"><PostDetail post={selectedPost} allPosts={BLOG_POSTS} onBack={handleGoHome} onPostClick={handlePostClick} /></div> : null;
-      case 'about':
-        return <AboutPage onBack={handleGoHome} scrollToContact={scrollToContact} />;
-      case 'home':
-      default:
-        return (
-          <HomePage
-            posts={filteredPosts}
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
+  const CurrentContent = () => (
+    <Routes location={location} key={location.pathname}>
+      <Route path="/" element={
+        <HomePage 
+          posts={filteredPosts} 
+          activeCategory={activeCategory} 
+          onCategoryChange={setActiveCategory} 
+          categories={CATEGORIES} 
+          onPostClick={handlePostClick} 
+        />
+      } />
+      <Route path="/about" element={<AboutPage onBack={handleGoHome} scrollToContact={scrollToContact} />} />
+      <Route path="/post/:id" element={
+        selectedPost ? (
+          <div className="max-w-4xl mx-auto w-full">
+            <PostDetail post={selectedPost} allPosts={BLOG_POSTS} onBack={handleGoHome} onPostClick={handlePostClick} />
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <h2 className="text-2xl font-bold">Post not found</h2>
+            <button onClick={handleGoHome} className="mt-4 text-oracle-red underline">Return Home</button>
+          </div>
+        )
+      } />
+      {/* Mobile-only views */}
+      <Route path="/explore" element={
+        <div className="lg:hidden py-4 space-y-8 max-w-2xl mx-auto">
+          <Sidebar
             categories={CATEGORIES}
-            onPostClick={handlePostClick}
+            activeCategory={activeCategory}
+            onCategoryChange={(cat) => {
+              setActiveCategory(cat);
+              navigate('/');
+            }}
           />
-        );
-    }
-  };
+        </div>
+      } />
+      <Route path="/ai" element={
+        <div className="lg:hidden py-4 h-[calc(100vh-16rem)] min-h-[500px] max-w-2xl mx-auto">
+          <OracleAssistant />
+        </div>
+      } />
+      <Route path="/more" element={
+        <div className="lg:hidden py-6 text-center space-y-8 max-w-xl mx-auto">
+          <div
+            className="relative isolate w-48 h-48 bg-slate-200/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full mx-auto overflow-hidden shadow-xl cursor-pointer p-2 border border-slate-200 dark:border-slate-700"
+            onClick={() => setIsAboutModalOpen(true)}
+          >
+            <div className="absolute inset-[-20%] bg-oracle-red/30 liquid-shape blur-[20px] -z-10 animate-pulse-slow"></div>
+            <img src="/avatar.png" alt="Author" className="w-full h-full object-cover rounded-full" />
+          </div>
+          <div className="grid grid-cols-2 gap-4 px-4">
+            <button onClick={handleGoHome} className="relative isolate overflow-hidden bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white group">
+              <div className="absolute inset-[-50%] bg-oracle-red/10 liquid-shape blur-[30px] opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+              Home
+            </button>
+            <button onClick={() => navigateTo('about')} className="relative isolate overflow-hidden bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-100 dark:border-slate-800 font-black text-xs uppercase tracking-widest text-slate-800 dark:text-white group">
+              <div className="absolute inset-[-50%] bg-oracle-red/10 liquid-shape blur-[30px] opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+              About
+            </button>
+          </div>
+        </div>
+      } />
+    </Routes>
+  );
+
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300 w-full overflow-x-hidden relative">
@@ -202,17 +232,18 @@ const App: React.FC = () => {
         <div className="w-full min-w-0">
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeMobileTab !== 'feed' ? activeMobileTab : currentView + (selectedPost?.id || '')}
+              key={location.pathname}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
-              {renderContent()}
+              <CurrentContent />
             </motion.div>
           </AnimatePresence>
         </div>
       </main>
+
 
       <AboutMeModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} onContactClick={handleGoToContact} />
 
