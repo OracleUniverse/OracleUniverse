@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import SEO from './SEO';
+
 
 interface AboutPageProps {
   onBack?: () => void;
@@ -71,6 +73,11 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, scrollToContact }) => {
 
   return (
     <div className="animate-fadeIn space-y-16 pb-10">
+      <SEO 
+        title="About our Expert Author" 
+        description="Meet the Oracle Specialist behind Oracle Universe, dedicated to empowering architects with precision intelligence."
+      />
+
       {onBack && (
         <button 
           onClick={onBack}

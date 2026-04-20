@@ -1,6 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { BlogPost } from '../types';
+import SEO from './SEO';
+
 
 interface PostDetailProps {
   post: BlogPost;
@@ -191,6 +193,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, allPosts, onBack, onPostC
 
   return (
     <article className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-fadeIn transition-colors duration-300 relative z-10">
+      <SEO post={post} />
+
 
       {/* Sticky Action Bar */}
       <div className="sticky top-20 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between transition-all">

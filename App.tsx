@@ -12,6 +12,9 @@ import { BLOG_POSTS, CATEGORIES } from './constants';
 import { BlogPost, ViewState, MobileTab } from './types';
 import { Analytics } from '@vercel/analytics/react';
 import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+import SEO from './components/SEO';
 
 
 export type ThemeMode = 'light' | 'dark' | 'midnight';
@@ -206,8 +209,15 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300 w-full overflow-x-hidden relative">
-      {/* Premium Aurora Background */}
+    <HelmetProvider>
+      <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300 w-full overflow-x-hidden relative">
+        <SEO 
+          url={location.pathname} 
+          title={location.pathname === '/' ? 'Home' : (location.pathname === '/about' ? 'About' : undefined)}
+        />
+        <SpeedInsights />
+        {/* Premium Aurora Background */}
+
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-oracle-red/5 liquid-shape blur-[100px] animate-aurora"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-oracle-red/5 liquid-shape blur-[100px] animate-aurora [animation-delay:-5s]"></div>
@@ -327,7 +337,9 @@ const App: React.FC = () => {
         </div>
       </footer>
       <Analytics />
-    </div>
+      </div>
+    </HelmetProvider>
+
   );
 };
 
